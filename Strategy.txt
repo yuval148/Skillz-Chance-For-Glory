@@ -1,0 +1,54 @@
+1. locate the enemy elves, and the enemy portals
+1.1 find possible weak spots in our defence
+2. rate how much of a threat each one of them is
+2.1 rate the spots by how dangeours they are (take into account the enemy elf location, enemy portals, and our portals)
+
+if one (or more) of the enemy elves or portals is a high risk
+{
+ 	3.1 calculate the price of threat damage and threat termination. And invest resources where fight is more profitable.
+ 	3.2 with 1 elf
+ 	3.2 with 2 elves
+ 	3.2 with ice trolls from a nearby portal
+ 	3.2 with a combination of 1/2 elves and ice trolls
+	3.3 give each one of the options a rating (the rating is a number that we generate that is used to evaluate the profit VS the cost of the move)
+	3.4 pick the best option and do it
+}
+
+
+if one of the enemy elves is a medium risk
+{
+	try to guess what the elf will do in the next turnes ( guess a couple of spots that he might try to attack)
+	rate the highest risk point from the enemy elf and go near there so if the elf tries to attack we'll have defences already set us and ready.
+	consider building a portal near the place if we have time so when the enemy elf comes we can summon ice trolls instead of killing elves
+}
+
+
+if one of the enemy portals is a medium risk
+{
+	repeat step 3.1 - 3.4 just with a lower rating so we won't do anything unless its easy to terminate it
+}
+
+if we find there's nothing with high risk heading at us but we find some serious weak spots
+{
+	use our rating from steps 1.1 & 2.1
+	rate how easy it'll be to fix each weak spot and then build a portal at the place we find has the highest risk and is comperably easy to fix.
+	decide how are we going to protect the elf by doing steps 3.2-3.4 and evaluating the situation again and again each step in case if something changes and the elf needs back-up
+}
+
+if there are no direct threats for the castle  or for the portals
+{
+
+	consider to building portals (look how many portals we have and how much mana we have)
+	if we decide its worth
+		{build a portal at an increasing radius from the castle depending on how many portals we have near the castle, and how agressive the enemy is towards our portals.
+}
+4. rate our options for the final attack which will consider how many portals we should use at once 
+   (considering that the nearer portals will produce 'better' lava giants, the amount of portals we have, where, and the amount of mana we have)
+4. give a rating for our attack (considering the mana we have, the amount of portals we have, and the location of our portals)
+4.1 rate how strong the enemy defensive potential is (considering his elves, portals, mana, castle HP and the portal location)
+if we decide that it's a good time to attack
+{
+ 	then unleash the final hit.
+	the final hit will be done with the portals we've decided to use.
+}
+5. once everywhile send a lava giant from the closest portal to us that will mess with the enemy.

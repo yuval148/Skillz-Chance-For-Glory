@@ -13,7 +13,7 @@ namespace SkillzProject
             totalPortals += portals.Length;
             if (portals.Length >= 1)
             {
-                if (turnsWithoutTrolls >= 8)
+                if (turnsWithoutTrolls >= iceTrollSummonRate)
                 {
                     bool flag = false;
                     Creature[] enemyGiants = game.GetEnemyLavaGiants();
@@ -21,7 +21,7 @@ namespace SkillzProject
                     {
                         foreach (Creature giant in enemyGiants)
                         {
-                            if (giant.Distance(game.GetMyCastle()) <= 2000)
+                            if (giant.Distance(game.GetMyCastle()) <= enemyAggressiveLavaGiantRangeFromCastle)
                             {
                                 Portal currentBest = FindNearest(giant, game);
                                 if (currentBest.CanSummonIceTroll() && !flag)
@@ -44,7 +44,7 @@ namespace SkillzProject
                             }
                             foreach (Portal current in portals)
                             {
-                                if (elf.Distance(current) <= 700)
+                                if (elf.Distance(current) <= enemyAggressiveElfRangeFromPortal)
                                 {
                                     if (current.CanSummonIceTroll() && !flag)
                                     {
@@ -63,7 +63,7 @@ namespace SkillzProject
                             {
                                 continue;
                             }
-                            if (elf.Distance(game.GetMyCastle()) <= 2000)
+                            if (elf.Distance(game.GetMyCastle()) <= enemyAggressiveElfRangeFromCastle)
                             {
                                 Portal currentBest = FindNearest(game.GetMyCastle(), game);
                                 if (currentBest.CanSummonIceTroll() && !flag)
@@ -93,7 +93,7 @@ namespace SkillzProject
                     }
                 }
                 game.Debug("Average portals: " + (float)totalPortals / game.Turn);
-                if ((game.Turn >= 600 && (totalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 40 && game.GetMyMana() > 50))
+                if ((game.Turn >= theLongestDay && (totalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 40 && game.GetMyMana() > 50))
                 {
                     Portal currentBest = FindNearest(game.GetEnemyCastle(), game);
                     if (currentBest.CanSummonLavaGiant())

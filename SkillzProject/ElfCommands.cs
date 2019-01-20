@@ -4,6 +4,7 @@ namespace SkillzProject
 {
     class ElfCommands : StrategicCalculations
     {
+        //To do: after trun 600, elves start attacking
         public override void DoTurn(Game game)
         {
             Elf[] myElves = game.GetMyLivingElves();

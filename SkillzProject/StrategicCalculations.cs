@@ -8,6 +8,8 @@ namespace SkillzProject
         protected int buildRange { get; private set; }
         protected int defendRadius { get; private set; }
         protected int desiredPortalAmount { get; private set; }
+        protected int iceTrollSummonRate { get; private set; }
+        protected int theLongestDay { get; private set; }
         protected int minBuildRadius { get; private set; }
         protected int minManaForPortal { get; private set; }
         protected int maxPotentialMana { get; private set; }
@@ -21,11 +23,13 @@ namespace SkillzProject
         public abstract void DoTurn(Game game);
         public void CalculateAll(Game game)
         {
-            CalculateDefendRadius(game);
-            CalculateMaxPotentialMana(game);
             CalculateBuildRange(game);
+            CalculateDefendRadius(game);
+            CalculateDesiredPortalAmount(game);
+            CalculateIceTrollSummonRate(game);
             CalculateMinBuildRadius(game);
             CalculateMinManaForPortal(game);
+            CalculateMaxPotentialMana(game);
             CalculateEnemyAggressivePortalRangeFromCastle(game);
             CalculateEnemyAggressivePortalRangeFromElf(game);
             CalculateEnemyAggressiveElfRangeFromCastle(game);
@@ -53,11 +57,19 @@ namespace SkillzProject
         }
         private void CalculateDefendRadius(Game game)
         {
-            defendRadius = 1300;
+            defendRadius = ((game.ElfMaxHealth / game.ElfAttackMultiplier) * game.ElfMaxSpeed / 2) + game.PortalSize + game.CastleSize;
+        }
+        private void CalculateIceTrollSummonRate(Game game)
+        {
+            iceTrollSummonRate = (int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.GetMyself().ManaPerTurn) * 1.6));
+        }
+        private void CalculateTheLongestDay(Game game)
+        {
+            theLongestDay = (int)(game.MaxTurns * 0.8);
         }
         private void CalculateMaxPotentialMana(Game game)
         {
-            maxPotentialMana = (game.MaxTurns - 150) * game.GetMyself().ManaPerTurn;
+            maxPotentialMana = theLongestDay * game.GetMyself().ManaPerTurn;
         }
         private void CalculateBuildRange(Game game)
         {

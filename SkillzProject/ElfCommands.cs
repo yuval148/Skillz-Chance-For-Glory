@@ -34,7 +34,7 @@ namespace SkillzProject
             }
             if (myElves.Length >= 1 && !myElves[0].AlreadyActed)
             {
-                if (game.GetMyMana() > 100 && PortalsInRadius(buildRange, game) < desiredPortalAmount)
+                if (game.GetMyMana() > 100 && PortalsInRadius(minBuildRadius, game) < desiredPortalAmount)
                 {
                     if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
                     {
@@ -42,7 +42,7 @@ namespace SkillzProject
                     }
                     else
                     {
-                        BuildInRadius(buildRange, myElves[0], game);
+                        BuildInRadius(minBuildRadius, myElves[0], game);
                     }
                 }
             }
@@ -79,12 +79,12 @@ namespace SkillzProject
                 {
                     continue;
                 }
-                if (game.GetMyMana() > minManaForPortal && PortalsInRadius(buildRange, game) < desiredPortalAmount && elf.CanBuildPortal())
+                if (game.GetMyMana() > minManaForPortal && PortalsInRadius(minBuildRadius, game) < desiredPortalAmount && elf.CanBuildPortal())
                 {
                     elf.BuildPortal();
                     continue;
                 }
-                BuildInRadius(buildRange, elf, game);
+                BuildInRadius(minBuildRadius, elf, game);
             }
         }
         public void DefendAgainst(GameObject[] arrayOfType, Game game, Elf[] myElves, int range = 1500, int elfRange = 0)
@@ -150,14 +150,14 @@ namespace SkillzProject
         {
             if (builder.AlreadyActed)
                 return;
-            if (manaWasted >= 3000)
+            if (manaWasted >= maxPotentialMana / 2)
             {
-                if (radius > maxPotentialMana - manaWasted && radius > 1700)
+                if (radius > maxPotentialMana - manaWasted && radius > minBuildRadius + 300)
                 {
                     return;
                 }
             }
-            if (radius > 5000) return;
+            if (radius > maxBuildRadius) return;
             Location baseLocation = game.GetMyCastle().Location;
             double baseDegree;
             double a = System.Math.Sqrt(System.Math.Pow(baseLocation.Col - game.GetEnemyCastle().Location.Col, 2) + System.Math.Pow(baseLocation.Row - game.GetEnemyCastle().Location.Row, 2));

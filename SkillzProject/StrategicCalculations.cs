@@ -5,12 +5,12 @@ namespace SkillzProject
     abstract class StrategicCalculations
     {
         public int manaWasted { get; set; }
-        protected int buildRange { get; private set; }
         protected int defendRadius { get; private set; }
         protected int desiredPortalAmount { get; private set; }
         protected int iceTrollSummonRate { get; private set; }
         protected int theLongestDay { get; private set; }
-        protected int minBuildRadius { get; private set; }
+        protected int minBuildRadius { get; private set; } 
+        protected int maxBuildRadius { get; private set; } 
         protected int minManaForPortal { get; private set; }
         protected int maxPotentialMana { get; private set; }
         protected int enemyAggressivePortalRangeFromCastle { get; private set; }
@@ -23,11 +23,12 @@ namespace SkillzProject
         public abstract void DoTurn(Game game);
         public void CalculateAll(Game game)
         {
-            CalculateBuildRange(game);
+            CalculateTheLongestDay(game);
+            CalculateMinBuildRadius(game);
+            CalculateMaxBuildRadius(game);
             CalculateDefendRadius(game);
             CalculateDesiredPortalAmount(game);
             CalculateIceTrollSummonRate(game);
-            CalculateMinBuildRadius(game);
             CalculateMinManaForPortal(game);
             CalculateMaxPotentialMana(game);
             CalculateEnemyAggressivePortalRangeFromCastle(game);
@@ -71,36 +72,13 @@ namespace SkillzProject
         {
             maxPotentialMana = theLongestDay * game.GetMyself().ManaPerTurn;
         }
-        private void CalculateBuildRange(Game game)
-        {
-            if (game.Turn % 100 == 0)
-            {
-                buildRange = 2800;
-                if (game.Turn < 400)
-                {
-                    buildRange = 2300;
-                }
-                if (game.Turn < 200)
-                {
-                    buildRange = 1800;
-                }
-            }
-            if (game.GetMyCastle().CurrentHealth < 125 && buildRange > 2300)
-            {
-                buildRange = 2300;
-            }
-            if (game.GetMyCastle().CurrentHealth < 100 && buildRange > 1800)
-            {
-                buildRange = 1800;
-            }
-            if (game.GetMyCastle().CurrentHealth < 50 && buildRange > 1300)
-            {
-                buildRange = 1300;
-            }
-        }
         private void CalculateMinBuildRadius(Game game)
         {
-            minBuildRadius = 1300;
+            minBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize);
+        }
+        private void CalculateMaxBuildRadius(Game game)
+        {
+            maxBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize);
         }
         private void CalculateMinManaForPortal(Game game)
         {

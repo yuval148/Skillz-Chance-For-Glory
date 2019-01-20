@@ -5,16 +5,34 @@ namespace SkillzProject
     abstract class StrategicCalculations
     {
         public int manaWasted { get; set; }
-        protected int defendRadius { get; private set; }
-        protected int maxPotentialMana { get; private set; }
         protected int buildRange { get; private set; }
+        protected int defendRadius { get; private set; }
+        protected int desiredPortalAmount { get; private set; }
+        protected int minBuildRadius { get; private set; }
+        protected int minManaForPortal { get; private set; }
+        protected int maxPotentialMana { get; private set; }
         protected int enemyAggressivePortalRangeFromCastle { get; private set; }
+        protected int enemyAggressivePortalRangeFromElf { get; private set; }
+        protected int enemyAggressiveElfRangeFromCastle { get; private set; }
+        protected int enemyAggressiveElfRangeFromElf { get; private set; }
+        protected int enemyAggressiveElfRangeFromPortal { get; private set; }
+        protected int enemyAggressiveLavaGiantRangeFromCastle { get; private set; }
+        protected int enemyAggressiveLavaGiantRangeFromElf { get; private set; }
         public abstract void DoTurn(Game game);
         public void CalculateAll(Game game)
         {
             CalculateDefendRadius(game);
             CalculateMaxPotentialMana(game);
             CalculateBuildRange(game);
+            CalculateMinBuildRadius(game);
+            CalculateMinManaForPortal(game);
+            CalculateEnemyAggressivePortalRangeFromCastle(game);
+            CalculateEnemyAggressivePortalRangeFromElf(game);
+            CalculateEnemyAggressiveElfRangeFromCastle(game);
+            CalculateEnemyAggressiveElfRangeFromElf(game);
+            CalculateEnemyAggressiveElfRangeFromPortal(game);
+            CalculateEnemyAggressiveLavaGiantRangeFromCastle(game);
+            CalculateEnemyAggressiveLavaGiantRangeFromElf(game);
         }
         protected Location Cis(double radius, double degree, Location baseLocation = null)
         {
@@ -68,9 +86,45 @@ namespace SkillzProject
                 buildRange = 1300;
             }
         }
+        private void CalculateMinBuildRadius(Game game)
+        {
+            minBuildRadius = 1300;
+        }
+        private void CalculateMinManaForPortal(Game game)
+        {
+            minManaForPortal = 100;
+        }
+        private void CalculateDesiredPortalAmount(Game game)
+        {
+            desiredPortalAmount = 5;
+        }
         private void CalculateEnemyAggressivePortalRangeFromCastle(Game game)
         {
             enemyAggressivePortalRangeFromCastle = 3500;
+        }
+        private void CalculateEnemyAggressivePortalRangeFromElf(Game game)
+        {
+            enemyAggressivePortalRangeFromElf = 700;
+        }
+        private void CalculateEnemyAggressiveElfRangeFromCastle(Game game)
+        {
+            enemyAggressiveElfRangeFromCastle = 1500;
+        }
+        private void CalculateEnemyAggressiveElfRangeFromElf(Game game)
+        {
+            enemyAggressiveElfRangeFromElf = 500;
+        }
+        private void CalculateEnemyAggressiveElfRangeFromPortal(Game game)
+        {
+            enemyAggressiveElfRangeFromPortal = 750;
+        }
+        private void CalculateEnemyAggressiveLavaGiantRangeFromCastle(Game game)
+        {
+            enemyAggressiveLavaGiantRangeFromCastle = 1500;
+        }
+        private void CalculateEnemyAggressiveLavaGiantRangeFromElf(Game game)
+        {
+            enemyAggressiveLavaGiantRangeFromElf = 500;
         }
     }
 }

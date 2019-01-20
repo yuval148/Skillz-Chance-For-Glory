@@ -12,14 +12,14 @@ namespace SkillzProject
             {
                 return;
             }
-            if (PortalsInRadius(1300, game) >= 4)
+            if (PortalsInRadius(minBuildRadius, game) >= desiredPortalAmount - 1)
             {
-                DefendAgainst(game.GetAllEnemyElves(), game, myElves, 0, 300);
-                DefendAgainst(game.GetEnemyPortals(), game, myElves, enemyAggressivePortalRangeFromCastle, 700);
+                DefendAgainst(game.GetAllEnemyElves(), game, myElves, enemyAggressiveElfRangeFromCastle, enemyAggressiveElfRangeFromElf);
+                DefendAgainst(game.GetEnemyPortals(), game, myElves, enemyAggressivePortalRangeFromCastle, enemyAggressiveElfRangeFromElf);
             }
             else
             {
-                if (game.GetMyMana() > 100)
+                if (game.GetMyMana() > minManaForPortal)
                 {
                     if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
                     {
@@ -27,13 +27,13 @@ namespace SkillzProject
                     }
                     else
                     {
-                        BuildInRadius(1300, myElves[0], game);
+                        BuildInRadius(minBuildRadius, myElves[0], game);
                     }
                 }
             }
             if (myElves.Length >= 1 && !myElves[0].AlreadyActed)
             {
-                if (game.GetMyMana() > 100 && PortalsInRadius(buildRange, game) < 5)
+                if (game.GetMyMana() > 100 && PortalsInRadius(buildRange, game) < desiredPortalAmount)
                 {
                     if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
                     {
@@ -45,12 +45,11 @@ namespace SkillzProject
                     }
                 }
             }
-            DefendAgainst(game.GetAllEnemyElves(), game, myElves, 0, 300);
-            DefendAgainst(game.GetEnemyPortals(), game, myElves, enemyAggressivePortalRangeFromCastle, 700);
-            DefendAgainst(game.GetAllEnemyElves(), game, myElves, 1500, 500);
-            DefendAgainst(game.GetEnemyLavaGiants(), game, myElves);
+            DefendAgainst(game.GetAllEnemyElves(), game, myElves, enemyAggressiveElfRangeFromCastle, enemyAggressiveElfRangeFromElf);
+            DefendAgainst(game.GetEnemyPortals(), game, myElves, enemyAggressivePortalRangeFromCastle, enemyAggressivePortalRangeFromElf);
+            DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, enemyAggressiveLavaGiantRangeFromCastle, enemyAggressiveLavaGiantRangeFromElf);
             //Defult 1 - defend portals
-            DefendOn(game.GetMyPortals(), game.GetEnemyLivingElves(), myElves, 750);
+            DefendOn(game.GetMyPortals(), game.GetEnemyLivingElves(), myElves, enemyAggressiveElfRangeFromPortal);
             //Defult 2 - look at enemies
             if (game.GetEnemyLivingElves().Length > 0)
             {
@@ -79,7 +78,7 @@ namespace SkillzProject
                 {
                     continue;
                 }
-                if (game.GetMyMana() > 100 && PortalsInRadius(1300, game) < 5 && elf.CanBuildPortal())
+                if (game.GetMyMana() > minManaForPortal && PortalsInRadius(buildRange, game) < desiredPortalAmount && elf.CanBuildPortal())
                 {
                     elf.BuildPortal();
                     continue;

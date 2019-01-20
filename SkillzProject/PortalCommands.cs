@@ -1,6 +1,6 @@
 ﻿using ElfKingdom;
 
-namespace SkillzProject
+namespace MyBot
 {
     class PortalCommands : StrategicCalculations
     {

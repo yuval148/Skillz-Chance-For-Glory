@@ -1,6 +1,6 @@
 ﻿using ElfKingdom;
 
-namespace SkillzProject
+namespace MyBot
 {
     abstract class StrategicCalculations
     {

@@ -4,19 +4,20 @@ namespace MyBot
 {
     class FinalBot : ISkillzBot
     {
-        int manaWasted = 0;
-        ElfCommands elfCommands = new ElfCommands();
-        PortalCommands portalCommands = new PortalCommands();
+        public int ManaWasted { get; set; } = 0;
+        internal ElfCommands ElfCommands { get; set; } = new ElfCommands();
+        internal PortalCommands PortalCommands { get; set; } = new PortalCommands();
+
         public void DoTurn(Game game)
         {
             int startingMana = game.GetMyMana();
-            Command(elfCommands, game);
-            Command(portalCommands, game);
-            manaWasted += startingMana - game.GetMyMana();
+            Command(ElfCommands, game);
+            Command(PortalCommands, game);
+            ManaWasted += startingMana - game.GetMyMana();
         }
         void Command(StrategicCalculations toCommand, Game game)
         {
-            toCommand.manaWasted = manaWasted;
+            toCommand.ManaWasted = ManaWasted;
             toCommand.CalculateAll(game);
             toCommand.DoTurn(game);
         }

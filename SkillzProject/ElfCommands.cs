@@ -13,14 +13,14 @@ namespace MyBot
             {
                 return;
             }
-            if (PortalsInRadius(minBuildRadius, game) >= desiredPortalAmount - 1)
+            if (PortalsInRadius(MinBuildRadius, game) >= DesiredPortalAmount - 1)
             {
-                DefendAgainst(game.GetAllEnemyElves(), game, myElves, enemyAggressiveElfRangeFromCastle, enemyAggressiveElfRangeFromElf);
-                DefendAgainst(game.GetEnemyPortals(), game, myElves, enemyAggressivePortalRangeFromCastle, enemyAggressiveElfRangeFromElf);
+                DefendAgainst(game.GetAllEnemyElves(), game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
+                DefendAgainst(game.GetEnemyPortals(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressiveElfRangeFromElf);
             }
             else
             {
-                if (game.GetMyMana() > minManaForPortal)
+                if (game.GetMyMana() > MinManaForPortal)
                 {
                     if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
                     {
@@ -28,13 +28,13 @@ namespace MyBot
                     }
                     else
                     {
-                        BuildInRadius(minBuildRadius, myElves[0], game);
+                        BuildInRadius(MinBuildRadius, myElves[0], game);
                     }
                 }
             }
             if (myElves.Length >= 1 && !myElves[0].AlreadyActed)
             {
-                if (game.GetMyMana() > 100 && PortalsInRadius(minBuildRadius, game) < desiredPortalAmount)
+                if (game.GetMyMana() > 100 && PortalsInRadius(MinBuildRadius, game) < DesiredPortalAmount)
                 {
                     if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
                     {
@@ -42,15 +42,15 @@ namespace MyBot
                     }
                     else
                     {
-                        BuildInRadius(minBuildRadius, myElves[0], game);
+                        BuildInRadius(MinBuildRadius, myElves[0], game);
                     }
                 }
             }
-            DefendAgainst(game.GetAllEnemyElves(), game, myElves, enemyAggressiveElfRangeFromCastle, enemyAggressiveElfRangeFromElf);
-            DefendAgainst(game.GetEnemyPortals(), game, myElves, enemyAggressivePortalRangeFromCastle, enemyAggressivePortalRangeFromElf);
-            DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, enemyAggressiveLavaGiantRangeFromCastle, enemyAggressiveLavaGiantRangeFromElf);
+            DefendAgainst(game.GetAllEnemyElves(), game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
+            DefendAgainst(game.GetEnemyPortals(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
+            DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, EnemyAggressiveLavaGiantRangeFromCastle, EnemyAggressiveLavaGiantRangeFromElf);
             //Defult 1 - defend portals
-            DefendOn(game.GetMyPortals(), game.GetEnemyLivingElves(), myElves, enemyAggressiveElfRangeFromPortal);
+            DefendOn(game.GetMyPortals(), game.GetEnemyLivingElves(), myElves, EnemyAggressiveElfRangeFromPortal);
             //Defult 2 - look at enemies
             if (game.GetEnemyLivingElves().Length > 0)
             {
@@ -69,7 +69,7 @@ namespace MyBot
                         }
                     }
                     double degree = DegreeBetween(nearestElf.Location, game.GetMyCastle().Location);
-                    myElves[i].MoveTo(Cis(defendRadius, degree, game.GetMyCastle().Location));
+                    myElves[i].MoveTo(Cis(DefendRadius, degree, game.GetMyCastle().Location));
                 }
             }
             //Defult 3 - pretend you're working
@@ -79,12 +79,12 @@ namespace MyBot
                 {
                     continue;
                 }
-                if (game.GetMyMana() > minManaForPortal && PortalsInRadius(minBuildRadius, game) < desiredPortalAmount && elf.CanBuildPortal())
+                if (game.GetMyMana() > MinManaForPortal && PortalsInRadius(MinBuildRadius, game) < DesiredPortalAmount && elf.CanBuildPortal())
                 {
                     elf.BuildPortal();
                     continue;
                 }
-                BuildInRadius(minBuildRadius, elf, game);
+                BuildInRadius(MinBuildRadius, elf, game);
             }
         }
         public void DefendAgainst(GameObject[] arrayOfType, Game game, Elf[] myElves, int range = 1500, int elfRange = 0)
@@ -150,14 +150,14 @@ namespace MyBot
         {
             if (builder.AlreadyActed)
                 return;
-            if (manaWasted >= maxPotentialMana / 2)
+            if (ManaWasted >= MaxPotentialMana / 2)
             {
-                if (radius > maxPotentialMana - manaWasted && radius > minBuildRadius + 300)
+                if (radius > MaxPotentialMana - ManaWasted && radius > MinBuildRadius + 300)
                 {
                     return;
                 }
             }
-            if (radius > maxBuildRadius) return;
+            if (radius > MaxBuildRadius) return;
             Location baseLocation = game.GetMyCastle().Location;
             double baseDegree;
             double a = System.Math.Sqrt(System.Math.Pow(baseLocation.Col - game.GetEnemyCastle().Location.Col, 2) + System.Math.Pow(baseLocation.Row - game.GetEnemyCastle().Location.Row, 2));

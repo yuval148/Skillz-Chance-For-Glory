@@ -4,17 +4,18 @@ namespace MyBot
 {
     class PortalCommands : StrategicCalculations
     {
-        int totalPortals = 0;
-        int turnsWithoutTrolls = 0;
+        public int TotalPortals { get; set; } = 0;
+        public int TurnsWithoutTrolls { get; set; } = 0;
+
         public override void DoTurn(Game game)
         {
-            turnsWithoutTrolls++;
+            TurnsWithoutTrolls++;
             Elf[] enemyElves;
             Portal[] portals = game.GetMyPortals();
-            totalPortals += portals.Length;
+            TotalPortals += portals.Length;
             if (portals.Length >= 1)
             {
-                if (turnsWithoutTrolls >= IceTrollSummonRate)
+                if (TurnsWithoutTrolls >= IceTrollSummonRate)
                 {
                     bool flag = false;
                     Creature[] enemyGiants = game.GetEnemyLavaGiants();
@@ -78,7 +79,7 @@ namespace MyBot
                     }
                     if (flag)
                     {
-                        turnsWithoutTrolls = 0;
+                        TurnsWithoutTrolls = 0;
                     }
                 }
                 if (game.Turn % 40 == 1 && game.Turn > 1)
@@ -93,8 +94,8 @@ namespace MyBot
                         portals[0].SummonLavaGiant();
                     }
                 }
-                game.Debug("Average portals: " + (float)totalPortals / game.Turn);
-                if ((game.Turn >= TheLongestDay && (totalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 40 && game.GetMyMana() > 50))
+                game.Debug("Average portals: " + (float)TotalPortals / game.Turn);
+                if ((game.Turn >= TheLongestDay && (TotalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 40 && game.GetMyMana() > 50))
                 {
                     Portal currentBest = FindNearest(game.GetEnemyCastle(), game);
                     if (currentBest.CanSummonLavaGiant())

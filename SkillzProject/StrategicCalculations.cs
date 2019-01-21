@@ -78,7 +78,7 @@ namespace MyBot
         }
         private void CalculateMaxBuildRadius(Game game)
         {
-            maxBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize);
+            maxBuildRadius = 5000 + (int)(game.PortalSize * 2.25 + game.CastleSize);
         }
         private void CalculateMinManaForPortal(Game game)
         {

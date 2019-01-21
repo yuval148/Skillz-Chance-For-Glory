@@ -8,6 +8,7 @@ namespace MyBot
         int turnsWithoutTrolls = 0;
         public override void DoTurn(Game game)
         {
+            turnsWithoutTrolls++;
             Elf[] enemyElves;
             Portal[] portals = game.GetMyPortals();
             totalPortals += portals.Length;

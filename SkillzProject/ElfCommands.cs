@@ -165,12 +165,12 @@ namespace MyBot
             baseDegree = System.Math.Asin(b / a);
             baseDegree = System.Math.PI / 4;
             int min = int.MaxValue;
-            for (int i = 0; i < 4; i++)
+            for (int i = 0; i < 8; i++)
             {
-                if (game.GetEnemyCastle().Distance(Cis(100, System.Math.PI / 4 + System.Math.PI * i / 2, game.GetMyCastle().Location)) < min)
+                if (game.GetEnemyCastle().Distance(Cis(100, System.Math.PI / 4 + System.Math.PI * i / 4, game.GetMyCastle().Location)) < min)
                 {
-                    min = game.GetEnemyCastle().Distance(Cis(100, System.Math.PI / 4 + System.Math.PI * i / 2, game.GetMyCastle().Location));
-                    baseDegree = System.Math.PI / 4 + System.Math.PI * i / 2;
+                    min = game.GetEnemyCastle().Distance(Cis(100, System.Math.PI / 4 + System.Math.PI * i / 4, game.GetMyCastle().Location));
+                    baseDegree = System.Math.PI / 4 + System.Math.PI * i / 4;
                 }
             }
             Location target;

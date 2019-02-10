@@ -38,6 +38,8 @@ namespace MyBot
                     enemyElves = game.GetAllEnemyElves();
                     if (enemyElves != null)
                     {
+                        Elf currentTarget = null;
+                        Portal summoner = null;
                         foreach (Elf elf in enemyElves)
                         {
                             if (elf.Location == null)
@@ -48,12 +50,30 @@ namespace MyBot
                             {
                                 if (elf.Distance(current) <= EnemyAggressiveElfRangeFromPortal)
                                 {
-                                    if (current.CanSummonIceTroll() && !flag)
+                                    if (currentTarget == null)
                                     {
-                                        current.SummonIceTroll();
-                                        flag = true;
+                                        currentTarget = elf;
+                                        summoner = current;
+                                    }
+                                    else
+                                    {
+                                        if (currentTarget.Distance(game.GetMyCastle()) > elf.Distance(game.GetMyCastle()) || (
+                                            currentTarget.Distance(game.GetMyCastle()) == elf.Distance(game.GetMyCastle()) &&
+                                            elf.Distance(current) < currentTarget.Distance(current)))
+                                        {
+                                            currentTarget = elf;
+                                            summoner = current;
+                                        }
                                     }
                                 }
+                            }
+                        }
+                        if (summoner != null)
+                        {
+                            if (summoner.CanSummonIceTroll() && !flag)
+                            {
+                                summoner.SummonIceTroll();
+                                flag = true;
                             }
                         }
                     }

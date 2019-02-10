@@ -9,7 +9,8 @@ namespace MyBot
         protected int DesiredPortalAmount { get; private set; }
         protected int IceTrollSummonRate { get; private set; }
         protected int TheLongestDay { get; private set; }
-        protected int MinBuildRadius { get; private set; } 
+        protected int MinPortalBuildRadius { get; private set; }
+        protected int MinFountainBuildRadius { get; private set; }
         protected int MaxBuildRadius { get; private set; } 
         protected int MinManaForPortal { get; private set; }
         protected int MaxPotentialMana { get; private set; }
@@ -24,7 +25,8 @@ namespace MyBot
         public void CalculateAll(Game game)
         {
             CalculateTheLongestDay(game);
-            CalculateMinBuildRadius(game);
+            CalculateMinPortalBuildRadius(game);
+            CalculateMinFountainBuildRadius(game);
             CalculateMaxBuildRadius(game);
             CalculateDefendRadius(game);
             CalculateDesiredPortalAmount(game);
@@ -62,7 +64,14 @@ namespace MyBot
         }
         private void CalculateIceTrollSummonRate(Game game)
         {
-            IceTrollSummonRate = (int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.GetMyself().ManaPerTurn) * 1.6));
+            try
+            {
+                IceTrollSummonRate = (int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.GetMyself().ManaPerTurn) * 1.6));
+            }
+            catch
+            {
+                IceTrollSummonRate = 8;//(int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.DefaultManaPerTurn) * 1.6));
+            }
         }
         private void CalculateTheLongestDay(Game game)
         {
@@ -72,9 +81,13 @@ namespace MyBot
         {
             MaxPotentialMana = TheLongestDay * game.GetMyself().ManaPerTurn;
         }
-        private void CalculateMinBuildRadius(Game game)
+        private void CalculateMinPortalBuildRadius(Game game)
         {
-            MinBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize);
+            MinPortalBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize) + game.ManaFountainSize * 2;
+        }
+        private void CalculateMinFountainBuildRadius(Game game)
+        {
+            MinFountainBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize);
         }
         private void CalculateMaxBuildRadius(Game game)
         {

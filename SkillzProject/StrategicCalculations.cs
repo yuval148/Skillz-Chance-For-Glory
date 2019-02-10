@@ -98,7 +98,9 @@ namespace MyBot
         }
         private void CalculateEnemyAggressiveElfRangeFromCastle(Game game)
         {
-            EnemyAggressiveElfRangeFromCastle = 1500;
+            //1500
+            EnemyAggressiveElfRangeFromCastle = game.CastleSize + game.ElfAttackRange + game.ElfMaxSpeed * IceTrollSummonRate;
+            //1600
         }
         private void CalculateEnemyAggressiveElfRangeFromElf(Game game)
         {
@@ -108,7 +110,7 @@ namespace MyBot
         {
             //750
             EnemyAggressiveElfRangeFromPortal = game.PortalSize + game.ElfAttackRange + game.ElfMaxSpeed * IceTrollSummonRate;
-            game.Debug("EAERFP: " + EnemyAggressiveElfRangeFromPortal);
+            //1400
         }
         private void CalculateEnemyAggressiveLavaGiantRangeFromCastle(Game game)
         {

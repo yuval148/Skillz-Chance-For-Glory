@@ -13,7 +13,7 @@ namespace MyBot
             {
                 return;
             }
-            if (PortalsInRadius(MinBuildRadius, game) >= DesiredPortalAmount - 1)
+            if (portals.Length >= DesiredPortalAmount - 1)
             {
                 DefendAgainst(game.GetAllEnemyElves(), game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
                 DefendAgainst(game.GetEnemyPortals(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressiveElfRangeFromElf);

@@ -57,9 +57,7 @@ namespace MyBot
                                     }
                                     else
                                     {
-                                        if (currentTarget.Distance(game.GetMyCastle()) > elf.Distance(game.GetMyCastle()) || (
-                                            currentTarget.Distance(game.GetMyCastle()) == elf.Distance(game.GetMyCastle()) &&
-                                            elf.Distance(current) < currentTarget.Distance(current)))
+                                        if (currentTarget.Distance(game.GetMyCastle()) > elf.Distance(game.GetMyCastle()))
                                         {
                                             currentTarget = elf;
                                             summoner = current;
@@ -68,8 +66,15 @@ namespace MyBot
                                 }
                             }
                         }
-                        if (summoner != null)
+                        if (currentTarget != null)
                         {
+                            foreach (Portal current in portals)
+                            {
+                                if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
+                                {
+                                    summoner = current;
+                                }
+                            }
                             if (summoner.CanSummonIceTroll() && !flag)
                             {
                                 summoner.SummonIceTroll();

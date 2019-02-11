@@ -66,7 +66,7 @@ namespace MyBot
         {
             try
             {
-                IceTrollSummonRate = (int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.GetMyself().ManaPerTurn) * 1.6));
+                IceTrollSummonRate = (int)System.Math.Floor((decimal)((game.IceTrollCost / game.GetMyself().ManaPerTurn) * 1.6));
             }
             catch
             {
@@ -87,7 +87,7 @@ namespace MyBot
         }
         private void CalculateMinFountainBuildRadius(Game game)
         {
-            MinFountainBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize);
+            MinFountainBuildRadius = (int)(game.ManaFountainSize * 2.24 + game.CastleSize);
         }
         private void CalculateMaxBuildRadius(Game game)
         {
@@ -99,7 +99,7 @@ namespace MyBot
         }
         private void CalculateDesiredPortalAmount(Game game)
         {
-            DesiredPortalAmount = 5;
+            DesiredPortalAmount = 4;
         }
         private void CalculateEnemyAggressivePortalRangeFromCastle(Game game)
         {

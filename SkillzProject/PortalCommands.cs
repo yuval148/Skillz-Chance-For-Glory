@@ -48,6 +48,10 @@ namespace MyBot
                             }
                             foreach (Portal current in portals)
                             {
+                                if (!IsWorthIt(current, game))
+                                {
+                                    continue;
+                                }
                                 if (elf.Distance(current) <= EnemyAggressiveElfRangeFromPortal)
                                 {
                                     if (currentTarget == null)
@@ -70,6 +74,10 @@ namespace MyBot
                         {
                             foreach (Portal current in portals)
                             {
+                                if (!IsWorthIt(current, game))
+                                {
+                                    continue;
+                                }
                                 if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
                                 {
                                     summoner = current;
@@ -143,12 +151,32 @@ namespace MyBot
             Portal currentBest = portals[0];
             foreach (Portal current in portals)
             {
+                if (!IsWorthIt(current, game))
+                {
+                    continue;
+                }
                 if (current.Distance(gameObject) < currentBest.Distance(gameObject))
                 {
                     currentBest = current;
                 }
             }
             return currentBest;
+        }
+        public bool IsWorthIt(Portal portal, Game game)
+        {
+            int health = portal.CurrentHealth;
+            foreach (var elf in game.GetEnemyLivingElves())
+            {
+                if (elf.IsBuilding)
+                {
+                    continue;
+                }
+                if (elf.Distance(portal) <= elf.AttackRange + game.PortalSize + game.ElfMaxSpeed * game.IceTrollSummoningDuration)
+                {
+                    health -= game.ElfAttackMultiplier * (game.IceTrollSummoningDuration - (elf.Distance(portal) - elf.AttackRange - game.PortalSize) / game.ElfMaxSpeed);
+                }
+            }
+            return health > 0;
         }
     }
 }

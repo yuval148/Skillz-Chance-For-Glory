@@ -30,7 +30,7 @@ namespace MyBot
             }
             else
             {
-                if (portals.Length >= DesiredPortalAmount - 1)
+                if (portals.Length >= DesiredPortalAmount)
                 {
                     DefendAgainst(game.GetAllEnemyElves(), game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
                     DefendAgainst(game.GetEnemyPortals(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressiveElfRangeFromElf);
@@ -51,15 +51,40 @@ namespace MyBot
                 }
                 if (myElves.Length >= 1 && !myElves[0].AlreadyActed)
                 {
-                    if (game.GetMyMana() > 100/* && PortalsInRadius(MinPortalBuildRadius, game) < DesiredPortalAmount*/)
+                    if (game.GetMyMana() > MinManaForPortal)
                     {
-                        if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
+                        if (PortalsInRadius(MinPortalBuildRadius, game) < DesiredPortalAmount)
                         {
-                            myElves[0].BuildPortal();
+                            if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
+                            {
+                                myElves[0].BuildPortal();
+                            }
+                            else
+                            {
+                                BuildInRadius(MinPortalBuildRadius, myElves[0], game);
+                            }
+                        }
+                        else if (game.GetMyself().ManaPerTurn <= 11)
+                        {
+                            if (myElves[0].CanBuildManaFountain())
+                            {
+                                myElves[0].BuildManaFountain();
+                            }
+                            else
+                            {
+                                BuildInRadius(MinFountainBuildRadius, myElves[0], game);
+                            }
                         }
                         else
                         {
-                            BuildInRadius(MinPortalBuildRadius, myElves[0], game);
+                            if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
+                            {
+                                myElves[0].BuildPortal();
+                            }
+                            else
+                            {
+                                BuildInRadius(MinPortalBuildRadius, myElves[0], game);
+                            }
                         }
                     }
                 }

@@ -26,7 +26,7 @@ namespace MyBot
                 }
                 else
                 {
-                    BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game);
+                    BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game, 1);
                 }
             }
             {
@@ -53,7 +53,7 @@ namespace MyBot
                 {
                     if (game.GetMyMana() > MinManaForPortal)
                     {
-                        if (PortalsInRadius(MinPortalBuildRadius, game) < DesiredPortalAmount)
+                        if (PortalsInRadius(MinPortalBuildRadius, game, 1500) < DesiredPortalAmount)
                         {
                             if (CanBuild(myElves[0], game))
                             {
@@ -72,7 +72,7 @@ namespace MyBot
                             }
                             else
                             {
-                                BuildInRadius(MinFountainBuildRadius, myElves[0], game);
+                                BuildInRadius(MinFountainBuildRadius, myElves[0], game, 1);
                             }
                         }
                         else
@@ -191,7 +191,7 @@ namespace MyBot
                 }
             }
         }
-        public void BuildInRadius(double radius, Elf builder, Game game, double degree = System.Math.PI / 3)
+        public void BuildInRadius(double radius, Elf builder, Game game, double degree = System.Math.PI / 3, double degreeModifier = 2.0)
         {
             if (builder.AlreadyActed)
                 return;
@@ -231,7 +231,7 @@ namespace MyBot
             }
             Location target;
             double modifier = System.Math.PI / 8;
-            for (int i = 1; i <= 5; i++)
+            for (int i = 1; i <= System.Math.Ceiling(5 / degreeModifier); i++)
             {
                 double temp = (i / 2) * System.Math.Pow(-1, i) * modifier;
                 target = Cis(radius, baseDegree + temp);
@@ -246,7 +246,7 @@ namespace MyBot
                 }
             }
             modifier = System.Math.PI / 40;
-            for (int i = 1; i <= 25; i++)
+            for (int i = 1; i <= System.Math.Ceiling(25 / degreeModifier); i++)
             {
                 double temp = (i / 2) * System.Math.Pow(-1, i) * modifier;
                 target = new Location((int)(radius * System.Math.Sin(baseDegree + temp)), (int)(radius * System.Math.Cos(baseDegree + temp)));
@@ -325,7 +325,7 @@ namespace MyBot
             switch (building)
             {
                 case Building.Portal:
-                    if (!elf.CanBuildPortal() || elf.AlreadyActed)
+                    if (!elf.CanBuildPortal() || elf.AlreadyActed || elf.Distance(game.GetMyCastle()) < MinPortalBuildRadius)
                         return false;
                     break;
                 case Building.Fountain:

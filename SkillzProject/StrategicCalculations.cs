@@ -83,7 +83,7 @@ namespace MyBot
         }
         private void CalculateMinPortalBuildRadius(Game game)
         {
-            MinPortalBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize) + game.ManaFountainSize * 2;
+            MinPortalBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize + game.ManaFountainSize * 2);
         }
         private void CalculateMinFountainBuildRadius(Game game)
         {

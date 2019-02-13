@@ -95,7 +95,14 @@ namespace MyBot
         }
         private void CalculateMinManaForPortal(Game game)
         {
-            MinManaForPortal = 100;
+            if (game.GetMyself().ManaPerTurn <= 8)
+            {
+                MinManaForPortal = game.ManaFountainCost * ((game.ManaFountainManaPerTurn * (1 + (8 - game.DefaultManaPerTurn) / game.ManaFountainManaPerTurn) - (game.GetMyself().ManaPerTurn - game.DefaultManaPerTurn)) / game.ManaFountainManaPerTurn);
+            }
+            else
+            {
+                MinManaForPortal = game.PortalCost;
+            }
         }
         private void CalculateDesiredPortalAmount(Game game)
         {

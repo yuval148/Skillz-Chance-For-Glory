@@ -4,6 +4,7 @@ namespace MyBot
 {
     class ElfCommands : StrategicCalculations
     {
+        enum Building { Portal, Fountain };
         //To do: after trun 600, elves start attacking
         public override void DoTurn(Game game)
         {
@@ -19,16 +20,15 @@ namespace MyBot
             }
             if (game.GetMyself().ManaPerTurn <= 8 && !(game.GetMyself().ManaPerTurn == 0 && game.GetMyMana() < game.ManaFountainCost))
             {
-                if (myElves[0].CanBuildManaFountain())
+                if (myElves[myElves.Length - 1].CanBuildManaFountain())
                 {
-                    myElves[0].BuildManaFountain();
+                    myElves[myElves.Length - 1].BuildManaFountain();
                 }
                 else
                 {
-                    BuildInRadius(MinFountainBuildRadius, myElves[0], game);
+                    BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game);
                 }
             }
-            else
             {
                 if (portals.Length >= DesiredPortalAmount)
                 {
@@ -39,7 +39,7 @@ namespace MyBot
                 {
                     if (game.GetMyMana() > MinManaForPortal)
                     {
-                        if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
+                        if (CanBuild(myElves[0], game))
                         {
                             myElves[0].BuildPortal();
                         }
@@ -55,7 +55,7 @@ namespace MyBot
                     {
                         if (PortalsInRadius(MinPortalBuildRadius, game) < DesiredPortalAmount)
                         {
-                            if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
+                            if (CanBuild(myElves[0], game))
                             {
                                 myElves[0].BuildPortal();
                             }
@@ -66,7 +66,7 @@ namespace MyBot
                         }
                         else if (game.GetMyself().ManaPerTurn <= 11)
                         {
-                            if (myElves[0].CanBuildManaFountain())
+                            if (CanBuild(myElves[0], game, Building.Fountain))
                             {
                                 myElves[0].BuildManaFountain();
                             }
@@ -77,7 +77,7 @@ namespace MyBot
                         }
                         else
                         {
-                            if (myElves[0].CanBuildPortal() && !myElves[0].AlreadyActed)
+                            if (CanBuild(myElves[0], game))
                             {
                                 myElves[0].BuildPortal();
                             }
@@ -319,6 +319,32 @@ namespace MyBot
                     }
                 }
             }
+        }
+        bool CanBuild(Elf elf, Game game, Building building = Building.Portal)
+        {
+            switch (building)
+            {
+                case Building.Portal:
+                    if (!elf.CanBuildPortal() || elf.AlreadyActed)
+                        return false;
+                    break;
+                case Building.Fountain:
+                    if (!elf.CanBuildManaFountain() || elf.AlreadyActed)
+                        return false;
+                    break;
+                default:
+                    break;
+            }
+            foreach (Elf anElf in game.GetMyLivingElves())
+            {
+                if (anElf == elf)
+                    continue;
+                if (anElf.Distance(elf) <= game.PortalSize * 2 && anElf.IsBuilding)
+                {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 }

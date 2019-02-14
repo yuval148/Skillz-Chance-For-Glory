@@ -1,4 +1,5 @@
 ﻿using ElfKingdom;
+using static System.Math;
 
 namespace MyBot
 {
@@ -45,18 +46,18 @@ namespace MyBot
         {
             if (baseLocation == null)
             {
-                return new Location((int)(radius * System.Math.Sin(degree)), (int)(radius * System.Math.Cos(degree)));
+                return new Location((int)(radius * Sin(degree)), (int)(radius * Cos(degree)));
             }
             else
             {
-                return new Location(baseLocation.Row + (int)(radius * System.Math.Sin(degree)), baseLocation.Col + (int)(radius * System.Math.Cos(degree)));
+                return new Location(baseLocation.Row + (int)(radius * Sin(degree)), baseLocation.Col + (int)(radius * Cos(degree)));
             }
         }
         protected double DegreeBetween(Location a, Location b)
         {
-            double a1 = System.Math.Sqrt(System.Math.Pow(a.Col - b.Col, 2) + System.Math.Pow(a.Row - b.Row, 2));
-            double b1 = System.Math.Abs(a.Col - b.Col);
-            return (a.Col > b.Col ? 3 * System.Math.PI / 2 : System.Math.PI / 2) + System.Math.Asin(b1 / a1);
+            double a1 = Sqrt(Pow(a.Col - b.Col, 2) + Pow(a.Row - b.Row, 2));
+            double b1 = Abs(a.Col - b.Col);
+            return (a.Col > b.Col ? 3 * PI / 2 : PI / 2) + Asin(b1 / a1);
         }
         private void CalculateDefendRadius(Game game)
         {
@@ -66,7 +67,7 @@ namespace MyBot
         {
             try
             {
-                IceTrollSummonRate = (int)System.Math.Floor((decimal)((game.IceTrollCost / game.GetMyself().ManaPerTurn) * 1.6));
+                IceTrollSummonRate = (int)Floor((decimal)((game.IceTrollCost / game.GetMyself().ManaPerTurn) * 1.6));
             }
             catch
             {

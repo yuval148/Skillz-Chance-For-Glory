@@ -1,5 +1,5 @@
 ﻿using ElfKingdom;
-
+using static System.Math;
 namespace MyBot
 {
     class ElfCommands : StrategicCalculations
@@ -90,8 +90,14 @@ namespace MyBot
                 }
             }
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 0, game.ElfAttackRange);
-            DefendAgainst(game.GetAllEnemyElves(), game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
-            DefendAgainst(game.GetEnemyPortals(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
+            GameObject[] enemyElves = game.GetEnemyLivingElves();
+            GameObject[] enemyPortals = game.GetEnemyPortals();
+            GameObject[] elvesAndPortals = new GameObject[enemyElves.Length + enemyPortals.Length];
+            System.Array.Copy(enemyElves, elvesAndPortals, enemyElves.Length);
+            System.Array.Copy(enemyPortals, 0, elvesAndPortals, enemyElves.Length, enemyPortals.Length);
+            DefendAgainst(elvesAndPortals, game, myElves, 0, Min(EnemyAggressivePortalRangeFromElf, EnemyAggressiveElfRangeFromElf));
+            DefendAgainst(enemyElves, game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
+            DefendAgainst(enemyPortals, game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, EnemyAggressiveLavaGiantRangeFromCastle, EnemyAggressiveLavaGiantRangeFromElf);
             //Defult 1 - defend portals
@@ -191,7 +197,7 @@ namespace MyBot
                 }
             }
         }
-        public void BuildInRadius(double radius, Elf builder, Game game, double degree = System.Math.PI / 3, double degreeModifier = 2.0)
+        public void BuildInRadius(double radius, Elf builder, Game game, double degree = PI / 3, double degreeModifier = 2.0)
         {
             if (builder.AlreadyActed)
                 return;
@@ -216,24 +222,24 @@ namespace MyBot
             }
             Location baseLocation = game.GetMyCastle().Location;
             double baseDegree;
-            double a = System.Math.Sqrt(System.Math.Pow(baseLocation.Col - game.GetEnemyCastle().Location.Col, 2) + System.Math.Pow(baseLocation.Row - game.GetEnemyCastle().Location.Row, 2));
-            double b = System.Math.Abs(baseLocation.Col - game.GetEnemyCastle().Location.Col);
-            baseDegree = System.Math.Asin(b / a);
-            baseDegree = System.Math.PI / 4;
+            double a = Sqrt(Pow(baseLocation.Col - game.GetEnemyCastle().Location.Col, 2) + Pow(baseLocation.Row - game.GetEnemyCastle().Location.Row, 2));
+            double b = Abs(baseLocation.Col - game.GetEnemyCastle().Location.Col);
+            baseDegree = Asin(b / a);
+            baseDegree = PI / 4;
             int min = int.MaxValue;
             for (int i = 0; i < 8; i++)
             {
-                if (game.GetEnemyCastle().Distance(Cis(100, System.Math.PI / 4 + System.Math.PI * i / 4, game.GetMyCastle().Location)) < min)
+                if (game.GetEnemyCastle().Distance(Cis(100, PI / 4 + PI * i / 4, game.GetMyCastle().Location)) < min)
                 {
-                    min = game.GetEnemyCastle().Distance(Cis(100, System.Math.PI / 4 + System.Math.PI * i / 4, game.GetMyCastle().Location));
-                    baseDegree = System.Math.PI / 4 + System.Math.PI * i / 4;
+                    min = game.GetEnemyCastle().Distance(Cis(100, PI / 4 + PI * i / 4, game.GetMyCastle().Location));
+                    baseDegree = PI / 4 + PI * i / 4;
                 }
             }
             Location target;
-            double modifier = System.Math.PI / 8;
-            for (int i = 1; i <= System.Math.Ceiling(5 / degreeModifier); i++)
+            double modifier = PI / 8;
+            for (int i = 1; i <= Ceiling(5 / degreeModifier); i++)
             {
-                double temp = (i / 2) * System.Math.Pow(-1, i) * modifier;
+                double temp = (i / 2) * Pow(-1, i) * modifier;
                 target = Cis(radius, baseDegree + temp);
                 target.Col += baseLocation.Col;
                 target.Row += baseLocation.Row;
@@ -245,11 +251,11 @@ namespace MyBot
                     return;
                 }
             }
-            modifier = System.Math.PI / 40;
-            for (int i = 1; i <= System.Math.Ceiling(25 / degreeModifier); i++)
+            modifier = PI / 40;
+            for (int i = 1; i <= Ceiling(25 / degreeModifier); i++)
             {
-                double temp = (i / 2) * System.Math.Pow(-1, i) * modifier;
-                target = new Location((int)(radius * System.Math.Sin(baseDegree + temp)), (int)(radius * System.Math.Cos(baseDegree + temp)));
+                double temp = (i / 2) * Pow(-1, i) * modifier;
+                target = new Location((int)(radius * Sin(baseDegree + temp)), (int)(radius * Cos(baseDegree + temp)));
                 target.Col += baseLocation.Col;
                 target.Row += baseLocation.Row;
                 if (game.CanBuildPortalAt(target))

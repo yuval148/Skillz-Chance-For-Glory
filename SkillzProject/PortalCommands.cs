@@ -1,5 +1,5 @@
 ﻿using ElfKingdom;
-
+using static System.Math;
 namespace MyBot
 {
     class PortalCommands : StrategicCalculations

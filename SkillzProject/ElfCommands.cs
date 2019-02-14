@@ -1,5 +1,5 @@
 ﻿using ElfKingdom;
-using static System.Math;
+
 namespace MyBot
 {
     class ElfCommands : StrategicCalculations
@@ -92,10 +92,6 @@ namespace MyBot
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 0, game.ElfAttackRange);
             GameObject[] enemyElves = game.GetEnemyLivingElves();
             GameObject[] enemyPortals = game.GetEnemyPortals();
-            GameObject[] elvesAndPortals = new GameObject[enemyElves.Length + enemyPortals.Length];
-            System.Array.Copy(enemyElves, elvesAndPortals, enemyElves.Length);
-            System.Array.Copy(enemyPortals, 0, elvesAndPortals, enemyElves.Length, enemyPortals.Length);
-            DefendAgainst(elvesAndPortals, game, myElves, 0, Min(EnemyAggressivePortalRangeFromElf, EnemyAggressiveElfRangeFromElf));
             DefendAgainst(enemyElves, game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
             DefendAgainst(enemyPortals, game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);

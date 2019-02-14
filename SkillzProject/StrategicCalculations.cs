@@ -1,9 +1,8 @@
 ﻿using ElfKingdom;
-using static System.Math;
 
 namespace MyBot
 {
-    abstract class StrategicCalculations
+    abstract class StrategicCalculations : Math
     {
         public int ManaWasted { get; set; }
         protected int DefendRadius { get; private set; }
@@ -22,6 +21,7 @@ namespace MyBot
         protected int EnemyAggressiveElfRangeFromPortal { get; private set; }
         protected int EnemyAggressiveLavaGiantRangeFromCastle { get; private set; }
         protected int EnemyAggressiveLavaGiantRangeFromElf { get; private set; }
+
         public abstract void DoTurn(Game game);
         public void CalculateAll(Game game)
         {
@@ -59,11 +59,11 @@ namespace MyBot
             double b1 = Abs(a.Col - b.Col);
             return (a.Col > b.Col ? 3 * PI / 2 : PI / 2) + Asin(b1 / a1);
         }
-        private void CalculateDefendRadius(Game game)
+        protected void CalculateDefendRadius(Game game)
         {
             DefendRadius = ((game.ElfMaxHealth / game.ElfAttackMultiplier) * game.ElfMaxSpeed / 2) + game.PortalSize + game.CastleSize;
         }
-        private void CalculateIceTrollSummonRate(Game game)
+        protected void CalculateIceTrollSummonRate(Game game)
         {
             try
             {
@@ -74,19 +74,19 @@ namespace MyBot
                 IceTrollSummonRate = 8;//(int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.DefaultManaPerTurn) * 1.6));
             }
         }
-        private void CalculateTheLongestDay(Game game)
+        protected void CalculateTheLongestDay(Game game)
         {
             TheLongestDay = (int)(game.MaxTurns * 0.8);
         }
-        private void CalculateMaxPotentialMana(Game game)
+        protected void CalculateMaxPotentialMana(Game game)
         {
             MaxPotentialMana = TheLongestDay * game.GetMyself().ManaPerTurn;
         }
-        private void CalculateMinPortalBuildRadius(Game game)
+        protected void CalculateMinPortalBuildRadius(Game game)
         {
             MinPortalBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize + game.ManaFountainSize * 2);
         }
-        private void CalculateMinFountainBuildRadius(Game game)
+        protected void CalculateMinFountainBuildRadius(Game game)
         {
             MinFountainBuildRadius = (int)(game.ManaFountainSize * 2.24 + game.CastleSize);
         }

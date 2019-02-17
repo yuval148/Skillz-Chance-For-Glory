@@ -14,13 +14,63 @@ namespace MyBot
             {
                 return;
             }
+            if (game.PortalCost >= 10000)
+            {
+                //HoraMana...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
+                    {
+                        elf.CastInvisibility();
+                        continue;
+                    }
+                    if (elf.InAttackRange(game.GetEnemyCastle()))
+                    {
+                        elf.Attack(game.GetEnemyCastle());
+                    }
+                    else
+                    {
+                        elf.MoveTo(game.GetEnemyCastle());
+                    }
+                }
+            }
+            if (game.ElfMaxSpeed == 0)
+            {
+                //Trap...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility() && !elf.AlreadyActed)
+                    {
+                        IceTroll[] iceTrolls = game.GetEnemyIceTrolls();
+                        foreach (var item in iceTrolls)
+                        {
+                            if (item.Distance(elf) <= game.IceTrollAttackRange)
+                            {
+                                elf.CastInvisibility();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (game.ElfMaxSpeed <= 5)
+            {
+                //IGotStamana...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastSpeedUp() && game.GetMyMana() > game.ManaFountainCost && !elf.AlreadyActed)
+                    {
+                        elf.CastSpeedUp();
+                    }
+                }
+            }
             if (game.DefaultManaPerTurn <= 0)
             {
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             }
             if (game.GetMyself().ManaPerTurn <= 8 && !(game.GetMyself().ManaPerTurn == 0 && game.GetMyMana() < game.ManaFountainCost))
             {
-                if (myElves[myElves.Length - 1].CanBuildManaFountain())
+                if (myElves[myElves.Length - 1].CanBuildManaFountain() && !myElves[myElves.Length - 1].AlreadyActed)
                 {
                     myElves[myElves.Length - 1].BuildManaFountain();
                 }
@@ -32,8 +82,7 @@ namespace MyBot
             {
                 if (portals.Length >= DesiredPortalAmount)
                 {
-                    DefendAgainst(game.GetAllEnemyElves(), game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
-                    DefendAgainst(game.GetEnemyPortals(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressiveElfRangeFromElf);
+                    DefendPortalsAndElves(game, myElves);
                 }
                 else
                 {
@@ -89,12 +138,27 @@ namespace MyBot
                     }
                 }
             }
+            //Hide oneself
+            if (game.GetMyMana() > 500)
+            {
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
+                    {
+                        IceTroll[] iceTrolls = game.GetEnemyIceTrolls();
+                        foreach (var item in iceTrolls)
+                        {
+                            if (item.Distance(elf) <= game.IceTrollAttackRange)
+                            {
+                                elf.CastInvisibility();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 0, game.ElfAttackRange);
-            GameObject[] enemyElves = game.GetEnemyLivingElves();
-            GameObject[] enemyPortals = game.GetEnemyPortals();
-            DefendAgainst(enemyPortals, game, myElves, (int)(EnemyAggressivePortalRangeFromCastle / 1.5), (int)(EnemyAggressivePortalRangeFromElf / 1.5));
-            DefendAgainst(enemyElves, game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
-            DefendAgainst(enemyPortals, game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
+            DefendPortalsAndElves(game, myElves);
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, EnemyAggressiveLavaGiantRangeFromCastle, EnemyAggressiveLavaGiantRangeFromElf);
             //Defult 1 - defend portals
@@ -134,6 +198,14 @@ namespace MyBot
                 }
                 BuildInRadius(MinPortalBuildRadius, elf, game);
             }
+        }
+        public void DefendPortalsAndElves(Game game, Elf[] myElves)
+        {
+            GameObject[] enemyElves = game.GetEnemyLivingElves();
+            GameObject[] enemyPortals = game.GetEnemyPortals();
+            DefendAgainst(enemyPortals, game, myElves, (int)(EnemyAggressivePortalRangeFromCastle / 1.5), (int)(EnemyAggressivePortalRangeFromElf / 1.5));
+            DefendAgainst(enemyElves, game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
+            DefendAgainst(enemyPortals, game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
         }
         public void DefendAgainst(GameObject[] arrayOfType, Game game, Elf[] myElves, int range = 1500, int elfRange = 0)
         {
@@ -192,12 +264,15 @@ namespace MyBot
                 {
                     if (game.GetMyMana() > myElves[i].Distance(defult[i]) / 3)
                     {
-                        if (myElves[i].CanCastSpeedUp())
+                        if (myElves[i].CurrentSpells.Length == 0 && myElves[i].CanCastSpeedUp())
                         {
                             myElves[i].CastSpeedUp();
                         }
                     }
-                    myElves[i].MoveTo(defult[i]);
+                    if (!myElves[i].AlreadyActed)
+                    {
+                        myElves[i].MoveTo(defult[i]);
+                    }
                 }
             }
         }

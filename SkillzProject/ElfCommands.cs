@@ -92,6 +92,7 @@ namespace MyBot
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 0, game.ElfAttackRange);
             GameObject[] enemyElves = game.GetEnemyLivingElves();
             GameObject[] enemyPortals = game.GetEnemyPortals();
+            DefendAgainst(enemyPortals, game, myElves, (int)(EnemyAggressivePortalRangeFromCastle / 1.5), (int)(EnemyAggressivePortalRangeFromElf / 1.5));
             DefendAgainst(enemyElves, game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
             DefendAgainst(enemyPortals, game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
@@ -189,6 +190,13 @@ namespace MyBot
                 }
                 else
                 {
+                    if (game.GetMyMana() > myElves[i].Distance(defult[i]) / 3)
+                    {
+                        if (myElves[i].CanCastSpeedUp())
+                        {
+                            myElves[i].CastSpeedUp();
+                        }
+                    }
                     myElves[i].MoveTo(defult[i]);
                 }
             }

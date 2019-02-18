@@ -23,6 +23,10 @@
         {
             return System.Math.Min(v1, v2);
         }
+        protected decimal Max(decimal v1, decimal v2)
+        {
+            return System.Math.Max(v1, v2);
+        }
         protected double Cos(double degree)
         {
             return System.Math.Cos(degree);

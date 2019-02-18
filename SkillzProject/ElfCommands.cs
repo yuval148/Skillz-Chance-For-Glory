@@ -68,7 +68,7 @@ namespace MyBot
             {
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             }
-            if (game.GetMyself().ManaPerTurn <= 8 && !(game.GetMyself().ManaPerTurn == 0 && game.GetMyMana() < game.ManaFountainCost))
+            if (game.GetMyself().ManaPerTurn <= DesiredManaPerTurn && !(game.GetMyself().ManaPerTurn == 0 && game.GetMyMana() < game.ManaFountainCost))
             {
                 if (myElves[myElves.Length - 1].CanBuildManaFountain() && !myElves[myElves.Length - 1].AlreadyActed)
                 {
@@ -113,7 +113,7 @@ namespace MyBot
                                 BuildInRadius(MinPortalBuildRadius, myElves[0], game);
                             }
                         }
-                        else if (game.GetMyself().ManaPerTurn <= 11)
+                        else if (game.GetMyself().ManaPerTurn <= IdealManaPerTurn)
                         {
                             if (CanBuild(myElves[0], game, Building.Fountain))
                             {
@@ -139,22 +139,12 @@ namespace MyBot
                 }
             }
             //Hide oneself
-            if (game.GetMyMana() > 500)
+            if (game.GetMyMana() > 300)
             {
                 foreach (var elf in myElves)
                 {
-                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
-                    {
-                        IceTroll[] iceTrolls = game.GetEnemyIceTrolls();
-                        foreach (var item in iceTrolls)
-                        {
-                            if (item.Distance(elf) <= game.IceTrollAttackRange)
-                            {
-                                elf.CastInvisibility();
-                                break;
-                            }
-                        }
-                    }
+                    //Hide oneself
+                    Hide(elf, game);
                 }
             }
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 0, game.ElfAttackRange);
@@ -324,9 +314,14 @@ namespace MyBot
                 target.Row += baseLocation.Row;
                 if (game.CanBuildPortalAt(target))
                 {
+                    //Hide oneself
+                    game.Debug("Elf " + builder.Id + " tried to hide. Elf " + builder.AlreadyActed + " acted.");
+                    Hide(builder, game);
+                    game.Debug("Elf " + builder.Id + " failed? to hide. Elf " + builder.AlreadyActed + " acted.");
                     if (builder.AlreadyActed)
                         return;
                     builder.MoveTo(target);
+                    game.Debug("Elf " + builder.Id + " built. Elf " + builder.AlreadyActed + " acted.");
                     return;
                 }
             }
@@ -339,13 +334,48 @@ namespace MyBot
                 target.Row += baseLocation.Row;
                 if (game.CanBuildPortalAt(target))
                 {
+                    //Hide oneself
+                    game.Debug("Elf " + builder.Id + " tried to hide. Elf " + builder.AlreadyActed + " acted.");
+                    Hide(builder, game);
+                    game.Debug("Elf " + builder.Id + " failed? to hide. Elf " + builder.AlreadyActed + " acted.");
                     if (builder.AlreadyActed)
                         return;
                     builder.MoveTo(target);
+                    game.Debug("Elf " + builder.Id + " built. Elf " + builder.AlreadyActed + " acted.");
                     return;
                 }
             }
             BuildInRadius(radius + 150, builder, game);
+        }
+        void Hide(Elf elf, Game game, int requiredMana = 100)
+        {
+            if (game.GetMyMana() <= requiredMana)
+            {
+                return;
+            }
+            if (!elf.AlreadyActed && elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
+            {
+                IceTroll[] iceTrolls = game.GetEnemyIceTrolls();
+                foreach (var item in iceTrolls)
+                {
+                    if (item.Distance(elf) <= game.IceTrollAttackRange)
+                    {
+                        game.Debug("Hiding");
+                        elf.CastInvisibility();
+                        return;
+                    }
+                }
+                Elf[] enemyElves = game.GetEnemyLivingElves();
+                foreach (var item in enemyElves)
+                {
+                    if (item.Distance(elf) <= game.ElfAttackRange)
+                    {
+                        game.Debug("Hiding");
+                        elf.CastInvisibility();
+                        break;
+                    }
+                }
+            }
         }
         int PortalsInRadius(int radius, Game game, int marginOfError = 150)
         {

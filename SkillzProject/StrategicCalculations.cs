@@ -7,6 +7,8 @@ namespace MyBot
         public int ManaWasted { get; set; }
         protected int DefendRadius { get; private set; }
         protected int DesiredPortalAmount { get; private set; }
+        protected int DesiredManaPerTurn { get; private set; }
+        protected int IdealManaPerTurn { get; private set; }
         protected int IceTrollSummonRate { get; private set; }
         protected int TheLongestDay { get; private set; }
         protected int MinPortalBuildRadius { get; private set; }
@@ -31,6 +33,8 @@ namespace MyBot
             CalculateMaxBuildRadius(game);
             CalculateDefendRadius(game);
             CalculateDesiredPortalAmount(game);
+            CalculateDesiredManaPerTurn(game);
+            CalculateIdealManaPerTurn(game);
             CalculateIceTrollSummonRate(game);
             CalculateMinManaForPortal(game);
             CalculateMaxPotentialMana(game);
@@ -108,6 +112,28 @@ namespace MyBot
         private void CalculateDesiredPortalAmount(Game game)
         {
             DesiredPortalAmount = 4;
+        }
+        private void CalculateDesiredManaPerTurn(Game game)
+        {
+            if (game.GetAllEnemyElves().Length == 3)
+            {
+                DesiredManaPerTurn = 13;
+            }
+            else
+            {
+                DesiredManaPerTurn = 8;
+            }
+        }
+        private void CalculateIdealManaPerTurn(Game game)
+        {
+            if (game.GetAllEnemyElves().Length == 3)
+            {
+                IdealManaPerTurn = 16;
+            }
+            else
+            {
+                IdealManaPerTurn = 11;
+            }
         }
         private void CalculateEnemyAggressivePortalRangeFromCastle(Game game)
         {

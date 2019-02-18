@@ -1,5 +1,5 @@
 ﻿using ElfKingdom;
-using static System.Math;
+
 namespace MyBot
 {
     class PortalCommands : StrategicCalculations
@@ -26,7 +26,7 @@ namespace MyBot
                             if (giant.Distance(game.GetMyCastle()) <= EnemyAggressiveLavaGiantRangeFromCastle)
                             {
                                 Portal currentBest = FindNearest(giant, game);
-                                if (currentBest.CanSummonIceTroll() && !flag)
+                                if (currentBest != null && currentBest.CanSummonIceTroll() && !flag)
                                 {
                                     currentBest.SummonIceTroll();
                                     flag = true;
@@ -83,7 +83,7 @@ namespace MyBot
                                     summoner = current;
                                 }
                             }
-                            if (summoner.CanSummonIceTroll() && !flag)
+                            if (summoner != null && summoner.CanSummonIceTroll() && !flag)
                             {
                                 summoner.SummonIceTroll();
                                 flag = true;
@@ -101,7 +101,7 @@ namespace MyBot
                             if (elf.Distance(game.GetMyCastle()) <= EnemyAggressiveElfRangeFromCastle)
                             {
                                 Portal currentBest = FindNearest(game.GetMyCastle(), game);
-                                if (currentBest.CanSummonIceTroll() && !flag)
+                                if (currentBest != null && currentBest.CanSummonIceTroll() && !flag)
                                 {
                                     currentBest.SummonIceTroll();
                                     flag = true;
@@ -118,7 +118,7 @@ namespace MyBot
                 if (game.Turn % 40 == 1 && game.Turn > 1)
                 {
                     Portal currentBest = FindNearest(game.GetEnemyCastle(), game);
-                    if (currentBest.CanSummonLavaGiant())
+                    if (currentBest != null && currentBest.CanSummonLavaGiant())
                     {
                         currentBest.SummonLavaGiant();
                     }
@@ -131,7 +131,7 @@ namespace MyBot
                 if ((game.Turn >= TheLongestDay && (TotalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 40 && game.GetMyMana() > 50))
                 {
                     Portal currentBest = FindNearest(game.GetEnemyCastle(), game);
-                    if (currentBest.CanSummonLavaGiant())
+                    if (currentBest != null && currentBest.CanSummonLavaGiant())
                     {
                         currentBest.SummonLavaGiant();
                     }
@@ -148,7 +148,19 @@ namespace MyBot
         public Portal FindNearest(GameObject gameObject, Game game)
         {
             Portal[] portals = game.GetMyPortals();
-            Portal currentBest = portals[0];
+            Portal currentBest = null;
+            foreach (Portal current in portals)
+            {
+                if (IsWorthIt(current, game))
+                {
+                    currentBest = current;
+                    break;
+                }
+            }
+            if (currentBest == null)
+            {
+                return null;
+            }
             foreach (Portal current in portals)
             {
                 if (!IsWorthIt(current, game))
@@ -171,9 +183,10 @@ namespace MyBot
                 {
                     continue;
                 }
-                if (elf.Distance(portal) <= elf.AttackRange + game.PortalSize + game.ElfMaxSpeed * game.IceTrollSummoningDuration)
+                if (elf.Distance(portal) <= elf.AttackRange + game.PortalSize + game.ElfMaxSpeed * (game.IceTrollSummoningDuration + 0))
                 {
-                    health -= game.ElfAttackMultiplier * (game.IceTrollSummoningDuration - (elf.Distance(portal) - elf.AttackRange - game.PortalSize) / game.ElfMaxSpeed);
+                    health -= game.ElfAttackMultiplier * (game.IceTrollSummoningDuration + 0 - (int)Max(0, (elf.Distance(portal) - elf.AttackRange - game.PortalSize) / game.ElfMaxSpeed));
+                    game.Debug("Portal " + portal.Id + " is threatend by elf " + elf.Id + ". Health will be " + health + " (was " + portal.CurrentHealth + ").");
                 }
             }
             return health > 0;

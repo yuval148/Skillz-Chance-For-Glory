@@ -6,10 +6,25 @@ namespace MyBot
     {
         enum Building { Portal, Fountain };
         //To do: after trun 600, elves start attacking
+        bool AngryFlag = false;
+
         public override void DoTurn(Game game)
         {
             Elf[] myElves = game.GetMyLivingElves();
             Portal[] portals = game.GetMyPortals();
+            try
+            {
+                if (game.Turn == 1 && game.GetEnemyLivingElves()[0].Distance(game.GetMyCastle()) < game.GetEnemyLivingElves()[0].Distance(game.GetEnemyCastle()))
+                { AngryFlag = true; }
+                if (AngryFlag)
+                {
+                    DefendAgainst(game.GetEnemyPortals(), game, myElves, int.MaxValue, int.MaxValue);
+                }
+            }
+            catch
+            {
+                game.Debug("We're sad");
+            }
             if (myElves.Length < 1)
             {
                 return;

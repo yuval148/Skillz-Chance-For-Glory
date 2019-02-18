@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SkillzAutocomplete %281%29">
-      <HintPath>..\..\..\..\Users\gurig\Downloads\SkillzAutocomplete (1).dll</HintPath>
+    <Reference Include="SkillzAutocomplete %282%29">
+      <HintPath>..\..\..\..\Users\gurig\Downloads\SkillzAutocomplete (2).dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="ElfCommands.cs" />
     <Compile Include="FinalBot.cs" />
+    <Compile Include="Math.cs" />
     <Compile Include="PortalCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StrategicCalculations.cs" />

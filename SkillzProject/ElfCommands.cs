@@ -5,15 +5,17 @@ namespace MyBot
     class ElfCommands : StrategicCalculations
     {
         enum Building { Portal, Fountain };
-        //To do: after trun 600, elves start attacking
+
         public override void DoTurn(Game game)
         {
             Elf[] myElves = game.GetMyLivingElves();
             Portal[] portals = game.GetMyPortals();
+            //If we have no elves, do nothing
             if (myElves.Length < 1)
             {
                 return;
             }
+            //Specific bot strategies
             if (game.PortalCost >= 10000)
             {
                 //HoraMana...
@@ -68,6 +70,12 @@ namespace MyBot
             {
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             }
+            //End specific bot strategies
+            /*
+             * Build fountains:
+             * If we have less mana than the desired mana per turn, the offensive elf will build mana fountains
+             * while the builder builds portals. 
+             */ 
             if (game.GetMyself().ManaPerTurn <= DesiredManaPerTurn && !(game.GetMyself().ManaPerTurn == 0 && game.GetMyMana() < game.ManaFountainCost))
             {
                 if (myElves[myElves.Length - 1].CanBuildManaFountain() && !myElves[myElves.Length - 1].AlreadyActed)
@@ -79,6 +87,12 @@ namespace MyBot
                     BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game, 1);
                 }
             }
+            /*
+             * Build portals:
+             * Our first priorety is to reach the desired portal amount. Until we do, building portals is our highest
+             * priority. Once we do, defending becomes our highest priority. If we have less manaPerTurn than our ideal
+             * mana per turn, we build more mana fountains, and then more portals.
+             */ 
             {
                 if (portals.Length >= DesiredPortalAmount)
                 {
@@ -138,7 +152,9 @@ namespace MyBot
                     }
                 }
             }
-            //Hide oneself
+            /*
+             * If we have enough mana, we hide our elves from enemies (close elves/ice trolls).
+             */ 
             if (game.GetMyMana() > 300)
             {
                 foreach (var elf in myElves)
@@ -147,18 +163,32 @@ namespace MyBot
                     Hide(elf, game);
                 }
             }
+            /*
+             * Defense:
+             * Our next priority is to defend against everything: first close elves, then close portals, then far elves
+             * , then far portals, then mana fountains and lastly lava giants (since trolls can pretty easily deal with
+             * those).
+             */ 
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 0, game.ElfAttackRange);
             DefendPortalsAndElves(game, myElves);
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, EnemyAggressiveLavaGiantRangeFromCastle, EnemyAggressiveLavaGiantRangeFromElf);
-            //Defult 1 - defend portals
+            /*
+             * Next, we defend our portals from elves near them.
+             */ 
             DefendOn(game.GetMyPortals(), game.GetEnemyLivingElves(), myElves, EnemyAggressiveElfRangeFromPortal);
-            //Elf 0 prefers "pretend you're building" over "look at enemies"
+            /*
+             * Elf 0, our builder, will then proceed to try and build more portals (in case we currently don't have
+             * enough mana, our elves will prioritize looking at enemies over building, but our builder shouldn't).
+             */
             if (myElves.Length > 1)
             {
                 BuildInRadius(MinPortalBuildRadius, myElves[0], game);
             }
-            //Defult 2 - look at enemies
+            /*
+             * Look at enemies:
+             * Our idle elves will look at enemies to be ready to intercept them once they get too close.
+             */ 
             if (game.GetEnemyLivingElves().Length > 0)
             {
                 for (int i = 1; i < myElves.Length; i++)
@@ -179,7 +209,10 @@ namespace MyBot
                     myElves[i].MoveTo(Cis(DefendRadius, degree, game.GetMyCastle().Location));
                 }
             }
-            //Defult 3 - pretend you're working
+            /*
+             * Pretend you're working:
+             * In case all enemy elves are dead, we can "pass the time" by building more portals.
+             */ 
             foreach (var elf in myElves)
             {
                 if (elf.AlreadyActed)
@@ -194,6 +227,11 @@ namespace MyBot
                 BuildInRadius(MinPortalBuildRadius, elf, game);
             }
         }
+        /// <summary>
+        /// Runs defendAgainst against portals and elves using our normal consts.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="myElves"></param>
         public void DefendPortalsAndElves(Game game, Elf[] myElves)
         {
             GameObject[] enemyElves = game.GetEnemyLivingElves();
@@ -202,7 +240,15 @@ namespace MyBot
             DefendAgainst(enemyElves, game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
             DefendAgainst(enemyPortals, game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
         }
-        public void DefendAgainst(GameObject[] arrayOfType, Game game, Elf[] myElves, int range = 1500, int elfRange = 0)
+        /// <summary>
+        /// Finds the best (nearest) elf to attack each dangerous target (closer to our castle than range or to our elves than elfRange).
+        /// </summary>
+        /// <param name="targets"></param>
+        /// <param name="game"></param>
+        /// <param name="myElves"></param>
+        /// <param name="range"></param>
+        /// <param name="elfRange"></param>
+        public void DefendAgainst(GameObject[] targets, Game game, Elf[] myElves, int range = 1500, int elfRange = 0)
         {
             GameObject[] defult = new GameObject[myElves.Length];
             int[] minDist = new int[myElves.Length];
@@ -210,7 +256,7 @@ namespace MyBot
             {
                 minDist[i] = int.MaxValue;
             }
-            foreach (var creature in arrayOfType)
+            foreach (var creature in targets)
             {
                 if (creature == null)
                 {
@@ -272,6 +318,14 @@ namespace MyBot
                 }
             }
         }
+        /// <summary>
+        /// Moves the builder to the best position in the desired radius for a portal/mana fountain. This function recursively finds the nearest possible radius where we can build a portal). This function MOVES the elf, but doesn't order it to BUILD.
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="builder"></param>
+        /// <param name="game"></param>
+        /// <param name="degree"></param>
+        /// <param name="degreeModifier"></param>
         public void BuildInRadius(double radius, Elf builder, Game game, double degree = PI / 3, double degreeModifier = 2.0)
         {
             if (builder.AlreadyActed)
@@ -337,6 +391,12 @@ namespace MyBot
             }
             BuildInRadius(radius + 150, builder, game);
         }
+        /// <summary>
+        /// A helper function for BuildInRadius.
+        /// </summary>
+        /// <param name="builder"></param>
+        /// <param name="game"></param>
+        /// <param name="target"></param>
         void MoveToBuild(Elf builder, Game game, Location target)
         {
             //Hide oneself
@@ -349,6 +409,12 @@ namespace MyBot
             game.Debug("Elf " + builder.Id + " moved to build. Elf " + builder.AlreadyActed + " acted.");
             return;
         }
+        /// <summary>
+        /// Checks whether the elf should hide and hides it.
+        /// </summary>
+        /// <param name="elf"></param>
+        /// <param name="game"></param>
+        /// <param name="requiredMana"></param>
         void Hide(Elf elf, Game game, int requiredMana = 100)
         {
             if (game.GetMyMana() <= requiredMana)
@@ -379,6 +445,13 @@ namespace MyBot
                 }
             }
         }
+        /// <summary>
+        /// Counts the amount of portals in a radius.
+        /// </summary>
+        /// <param name="radius"></param>
+        /// <param name="game"></param>
+        /// <param name="marginOfError"></param>
+        /// <returns></returns>
         int PortalsInRadius(int radius, Game game, int marginOfError = 150)
         {
             int portalCount = 0;
@@ -392,6 +465,13 @@ namespace MyBot
             }
             return portalCount;
         }
+        /// <summary>
+        /// The opposite of defendAgainst: finds the nearest object in danger to protect and protect it.
+        /// </summary>
+        /// <param name="protectIn"></param>
+        /// <param name="protectFrom"></param>
+        /// <param name="myElves"></param>
+        /// <param name="radiusToDefend"></param>
         public void DefendOn(GameObject[] protectIn, GameObject[] protectFrom, Elf[] myElves, int radiusToDefend)
         {
             if (protectIn.Length < 1 || protectFrom.Length < 1)
@@ -437,6 +517,13 @@ namespace MyBot
                 }
             }
         }
+        /// <summary>
+        /// Checks if the elf can build (more complicated than it sounds).
+        /// </summary>
+        /// <param name="elf"></param>
+        /// <param name="game"></param>
+        /// <param name="building"></param>
+        /// <returns></returns>
         bool CanBuild(Elf elf, Game game, Building building = Building.Portal)
         {
             switch (building)

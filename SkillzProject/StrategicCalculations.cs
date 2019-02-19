@@ -63,11 +63,11 @@ namespace MyBot
             double b1 = Abs(a.Col - b.Col);
             return (a.Col > b.Col ? 3 * PI / 2 : PI / 2) + Asin(b1 / a1);
         }
-        protected void CalculateDefendRadius(Game game)
+        private void CalculateDefendRadius(Game game)
         {
             DefendRadius = ((game.ElfMaxHealth / game.ElfAttackMultiplier) * game.ElfMaxSpeed / 2) + game.PortalSize + game.CastleSize;
         }
-        protected void CalculateIceTrollSummonRate(Game game)
+        private void CalculateIceTrollSummonRate(Game game)
         {
             try
             {
@@ -78,19 +78,19 @@ namespace MyBot
                 IceTrollSummonRate = 8;//(int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.DefaultManaPerTurn) * 1.6));
             }
         }
-        protected void CalculateTheLongestDay(Game game)
+        private void CalculateTheLongestDay(Game game)
         {
             TheLongestDay = (int)(game.MaxTurns * 0.8);
         }
-        protected void CalculateMaxPotentialMana(Game game)
+        private void CalculateMaxPotentialMana(Game game)
         {
             MaxPotentialMana = TheLongestDay * game.GetMyself().ManaPerTurn;
         }
-        protected void CalculateMinPortalBuildRadius(Game game)
+        private void CalculateMinPortalBuildRadius(Game game)
         {
             MinPortalBuildRadius = (int)(game.PortalSize * 2.25 + game.CastleSize + game.ManaFountainSize * 2);
         }
-        protected void CalculateMinFountainBuildRadius(Game game)
+        private void CalculateMinFountainBuildRadius(Game game)
         {
             MinFountainBuildRadius = (int)(game.ManaFountainSize * 2.24 + game.CastleSize);
         }

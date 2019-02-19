@@ -153,6 +153,11 @@ namespace MyBot
             DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, EnemyAggressiveLavaGiantRangeFromCastle, EnemyAggressiveLavaGiantRangeFromElf);
             //Defult 1 - defend portals
             DefendOn(game.GetMyPortals(), game.GetEnemyLivingElves(), myElves, EnemyAggressiveElfRangeFromPortal);
+            //Elf 0 prefers "pretend you're building" over "look at enemies"
+            if (myElves.Length > 1)
+            {
+                BuildInRadius(MinPortalBuildRadius, myElves[0], game);
+            }
             //Defult 2 - look at enemies
             if (game.GetEnemyLivingElves().Length > 0)
             {
@@ -246,6 +251,7 @@ namespace MyBot
                 {
                     continue;
                 }
+                game.Debug("Elf " + myElves[i].Id + " attacked!");
                 if (myElves[i].InAttackRange(defult[i]))
                 {
                     myElves[i].Attack(defult[i]);
@@ -270,17 +276,17 @@ namespace MyBot
         {
             if (builder.AlreadyActed)
                 return;
-            game.Debug("Wasted: " + ManaWasted);
-            game.Debug("Max potential: " + MaxPotentialMana);
-            game.Debug("Max radius: " + MaxBuildRadius);
-            game.Debug("Min radius: " + MinPortalBuildRadius);
-            game.Debug("Radius: " + radius);
+            //game.Debug("Wasted: " + ManaWasted);
+            //game.Debug("Max potential: " + MaxPotentialMana);
+            //game.Debug("Max radius: " + MaxBuildRadius);
+            //game.Debug("Min radius: " + MinPortalBuildRadius);
+            //game.Debug("Radius: " + radius);
             if (ManaWasted >= MaxPotentialMana / 2)
             {
-                game.Debug("Quit?");
+                //game.Debug("Quit?");
                 if (radius > MaxPotentialMana - ManaWasted && radius > MinPortalBuildRadius + 300)
                 {
-                    game.Debug("Quit!");
+                    //game.Debug("Quit!");
                     return;
                 }
             }
@@ -314,15 +320,7 @@ namespace MyBot
                 target.Row += baseLocation.Row;
                 if (game.CanBuildPortalAt(target))
                 {
-                    //Hide oneself
-                    game.Debug("Elf " + builder.Id + " tried to hide. Elf " + builder.AlreadyActed + " acted.");
-                    Hide(builder, game);
-                    game.Debug("Elf " + builder.Id + " failed? to hide. Elf " + builder.AlreadyActed + " acted.");
-                    if (builder.AlreadyActed)
-                        return;
-                    builder.MoveTo(target);
-                    game.Debug("Elf " + builder.Id + " built. Elf " + builder.AlreadyActed + " acted.");
-                    return;
+                    MoveToBuild(builder, game, target);
                 }
             }
             modifier = PI / 40;
@@ -334,18 +332,22 @@ namespace MyBot
                 target.Row += baseLocation.Row;
                 if (game.CanBuildPortalAt(target))
                 {
-                    //Hide oneself
-                    game.Debug("Elf " + builder.Id + " tried to hide. Elf " + builder.AlreadyActed + " acted.");
-                    Hide(builder, game);
-                    game.Debug("Elf " + builder.Id + " failed? to hide. Elf " + builder.AlreadyActed + " acted.");
-                    if (builder.AlreadyActed)
-                        return;
-                    builder.MoveTo(target);
-                    game.Debug("Elf " + builder.Id + " built. Elf " + builder.AlreadyActed + " acted.");
-                    return;
+                    MoveToBuild(builder, game, target);
                 }
             }
             BuildInRadius(radius + 150, builder, game);
+        }
+        void MoveToBuild(Elf builder, Game game, Location target)
+        {
+            //Hide oneself
+            game.Debug("Elf " + builder.Id + " tried to hide. Elf " + builder.AlreadyActed + " acted.");
+            Hide(builder, game);
+            game.Debug("Elf " + builder.Id + " failed? to hide. Elf " + builder.AlreadyActed + " acted.");
+            if (builder.AlreadyActed)
+                return;
+            builder.MoveTo(target);
+            game.Debug("Elf " + builder.Id + " moved to build. Elf " + builder.AlreadyActed + " acted.");
+            return;
         }
         void Hide(Elf elf, Game game, int requiredMana = 100)
         {

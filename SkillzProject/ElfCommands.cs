@@ -108,6 +108,7 @@ namespace MyBot
                         }
                         else
                         {
+                            game.Debug("0 Can't build. DI: " + myElves[0].Distance(game.GetMyCastle())  + " < " + MinPortalBuildRadius);
                             BuildInRadius(MinPortalBuildRadius, myElves[0], game);
                         }
                     }
@@ -354,14 +355,14 @@ namespace MyBot
             double a = Sqrt(Pow(baseLocation.Col - game.GetEnemyCastle().Location.Col, 2) + Pow(baseLocation.Row - game.GetEnemyCastle().Location.Row, 2));
             double b = Abs(baseLocation.Col - game.GetEnemyCastle().Location.Col);
             baseDegree = Asin(b / a);
-            baseDegree = PI / 4;
+            baseDegree = PI / 40;
             int min = int.MaxValue;
-            for (int i = 0; i < 8; i++)
+            for (int i = 0; i < 80; i++)
             {
-                if (game.GetEnemyCastle().Distance(Cis(100, PI / 4 + PI * i / 4, game.GetMyCastle().Location)) < min)
+                if (game.GetEnemyCastle().Distance(Cis(100, PI / 40 + PI * i / 40, game.GetMyCastle().Location)) < min)
                 {
-                    min = game.GetEnemyCastle().Distance(Cis(100, PI / 4 + PI * i / 4, game.GetMyCastle().Location));
-                    baseDegree = PI / 4 + PI * i / 4;
+                    min = game.GetEnemyCastle().Distance(Cis(100, PI / 40 + PI * i / 40, game.GetMyCastle().Location));
+                    baseDegree = PI / 40 + PI * i / 40;
                 }
             }
             Location target;
@@ -529,7 +530,7 @@ namespace MyBot
             switch (building)
             {
                 case Building.Portal:
-                    if (!elf.CanBuildPortal() || elf.AlreadyActed || elf.Distance(game.GetMyCastle()) < MinPortalBuildRadius)
+                    if (!elf.CanBuildPortal() || elf.AlreadyActed || elf.Distance(game.GetMyCastle()) < MinPortalBuildRadius - 2)
                         return false;
                     break;
                 case Building.Fountain:

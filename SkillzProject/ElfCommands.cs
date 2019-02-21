@@ -351,26 +351,12 @@ namespace MyBot
                 return;
             }
             Location baseLocation = game.GetMyCastle().Location;
-            double baseDegree;
-            double a = Sqrt(Pow(baseLocation.Col - game.GetEnemyCastle().Location.Col, 2) + Pow(baseLocation.Row - game.GetEnemyCastle().Location.Row, 2));
-            double b = Abs(baseLocation.Col - game.GetEnemyCastle().Location.Col);
-            baseDegree = Asin(b / a);
-            baseDegree = PI / 40;
-            int min = int.MaxValue;
-            for (int i = 0; i < 80; i++)
-            {
-                if (game.GetEnemyCastle().Distance(Cis(100, PI / 40 + PI * i / 40, game.GetMyCastle().Location)) < min)
-                {
-                    min = game.GetEnemyCastle().Distance(Cis(100, PI / 40 + PI * i / 40, game.GetMyCastle().Location));
-                    baseDegree = PI / 40 + PI * i / 40;
-                }
-            }
             Location target;
             double modifier = PI / 8;
             for (int i = 1; i <= Ceiling(5 / degreeModifier); i++)
             {
                 double temp = (i / 2) * Pow(-1, i) * modifier;
-                target = Cis(radius, baseDegree + temp);
+                target = Cis(radius, BaseDegree + temp);
                 target.Col += baseLocation.Col;
                 target.Row += baseLocation.Row;
                 if (game.CanBuildPortalAt(target))
@@ -382,7 +368,7 @@ namespace MyBot
             for (int i = 1; i <= Ceiling(25 / degreeModifier); i++)
             {
                 double temp = (i / 2) * Pow(-1, i) * modifier;
-                target = new Location((int)(radius * Sin(baseDegree + temp)), (int)(radius * Cos(baseDegree + temp)));
+                target = new Location((int)(radius * Sin(BaseDegree + temp)), (int)(radius * Cos(BaseDegree + temp)));
                 target.Col += baseLocation.Col;
                 target.Row += baseLocation.Row;
                 if (game.CanBuildPortalAt(target))

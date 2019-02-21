@@ -5,6 +5,7 @@ namespace MyBot
     abstract class StrategicCalculations : Math
     {
         public int ManaWasted { get; set; }
+        protected double BaseDegree { get; private set; }
         protected int DefendRadius { get; private set; }
         protected int DesiredPortalAmount { get; private set; }
         protected int DesiredManaPerTurn { get; private set; }
@@ -25,8 +26,16 @@ namespace MyBot
         protected int EnemyAggressiveLavaGiantRangeFromElf { get; private set; }
 
         public abstract void DoTurn(Game game);
+        public void CalculateConsts(Game game)
+        {
+            CalculateBaseDegree(game);
+        }
         public void CalculateAll(Game game)
         {
+            if (game.Turn <= 1)
+            {
+                CalculateConsts(game);
+            }
             CalculateTheLongestDay(game);
             CalculateMinPortalBuildRadius(game);
             CalculateMinFountainBuildRadius(game);
@@ -62,6 +71,23 @@ namespace MyBot
             double a1 = Sqrt(Pow(a.Col - b.Col, 2) + Pow(a.Row - b.Row, 2));
             double b1 = Abs(a.Col - b.Col);
             return (a.Col > b.Col ? 3 * PI / 2 : PI / 2) + Asin(b1 / a1);
+        }
+        private void CalculateBaseDegree(Game game)
+        {
+            Location baseLocation = game.GetMyCastle().Location;
+            double a = Sqrt(Pow(baseLocation.Col - game.GetEnemyCastle().Location.Col, 2) + Pow(baseLocation.Row - game.GetEnemyCastle().Location.Row, 2));
+            double b = Abs(baseLocation.Col - game.GetEnemyCastle().Location.Col);
+            BaseDegree = Asin(b / a);
+            BaseDegree = PI / 40;
+            int min = int.MaxValue;
+            for (int i = 0; i < 80; i++)
+            {
+                if (game.GetEnemyCastle().Distance(Cis(100, PI / 40 + PI * i / 40, game.GetMyCastle().Location)) < min)
+                {
+                    min = game.GetEnemyCastle().Distance(Cis(100, PI / 40 + PI * i / 40, game.GetMyCastle().Location));
+                    BaseDegree = PI / 40 + PI * i / 40;
+                }
+            }
         }
         private void CalculateDefendRadius(Game game)
         {

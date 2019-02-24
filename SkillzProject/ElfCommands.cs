@@ -16,6 +16,26 @@ namespace MyBot
                 return;
             }
             //Specific bot strategies
+            if (game.CastleMaxHealth <= 2)
+            {
+                //Labyrinth...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
+                    {
+                        elf.CastInvisibility();
+                        continue;
+                    }
+                    if (elf.InAttackRange(game.GetEnemyCastle()))
+                    {
+                        elf.Attack(game.GetEnemyCastle());
+                    }
+                    else
+                    {
+                        elf.MoveTo(game.GetEnemyCastle());
+                    }
+                }
+            }
             if (game.PortalCost >= 10000)
             {
                 //HoraMana...

@@ -6,6 +6,7 @@ namespace MyBot
     {
         public int TotalPortals { get; set; } = 0;
         public int TurnsWithoutTrolls { get; set; } = 0;
+        private bool MazganBot = false;
 
         public override void DoTurn(Game game)
         {
@@ -13,8 +14,50 @@ namespace MyBot
             Elf[] enemyElves;
             Portal[] portals = game.GetMyPortals();
             TotalPortals += portals.Length;
+            if (game.Turn == 1)
+            {
+                MazganBot = game.GetMyPortals().Length == 5 && game.GetEnemyPortals().Length == 5;
+            }
             if (portals.Length >= 1)
             {
+                //Specific bot strategies
+                if (game.GetAllMyElves().Length == 0 && game.Turn < TheLongestDay)
+                {
+                    //HeProteccButAlsoAttacc...
+                    foreach (Portal portal in portals)
+                    {
+                        if (portal.CanSummonTornado())
+                        {
+                            portal.SummonTornado();
+                        }
+                    }
+                }
+                if (MazganBot)
+                {
+                    //Mazgan bot...
+                    //Technically, we should just add DefendAgainstPortals using Tornadoes, but I'll do it later.
+                    //Right now, I just want to beat this bot.
+                    if (game.Turn == 1)
+                    {
+                        foreach (Portal portal in portals)
+                        {
+                            if (portal.CanSummonTornado())
+                            {
+                                portal.SummonTornado();
+                            }
+                        }
+                    }
+                    else if (game.Turn < TheLongestDay)
+                    {
+                        foreach (Portal portal in portals)
+                        {
+                            if (portal.CanSummonIceTroll())
+                            {
+                                portal.SummonIceTroll();
+                            }
+                        }
+                    }
+                }
                 if (TurnsWithoutTrolls >= IceTrollSummonRate)
                 {
                     bool flag = false;
@@ -90,6 +133,62 @@ namespace MyBot
                             }
                         }
                     }
+                    Tornado[] enemyTornadoes = game.GetEnemyTornadoes();
+                    if (enemyTornadoes != null)
+                    {
+                        Tornado currentTarget = null;
+                        Portal summoner = null;
+                        foreach (Tornado tornado in enemyTornadoes)
+                        {
+                            if (tornado.Location == null)
+                            {
+                                continue;
+                            }
+                            foreach (Portal current in portals)
+                            {
+                                if (!IsWorthIt(current, game))
+                                {
+                                    continue;
+                                }
+                                if (tornado.Distance(current) <= EnemyAggressiveTornadoRangeFromPortal)
+                                {
+                                    if (currentTarget == null)
+                                    {
+                                        currentTarget = tornado;
+                                        summoner = current;
+                                    }
+                                    else
+                                    {
+                                        if (currentTarget.Distance(game.GetMyCastle()) > tornado.Distance(game.GetMyCastle()))
+                                        {
+                                            currentTarget = tornado;
+                                            summoner = current;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (currentTarget != null)
+                        {
+                            foreach (Portal current in portals)
+                            {
+                                if (!IsWorthIt(current, game))
+                                {
+                                    continue;
+                                }
+                                if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
+                                {
+                                    summoner = current;
+                                }
+                            }
+                            if (summoner != null && summoner.CanSummonIceTroll() && !flag)
+                            {
+                                summoner.SummonIceTroll();
+                                flag = true;
+                            }
+                        }
+                    }
+
                     if (enemyElves != null)
                     {
                         foreach (Elf elf in enemyElves)
@@ -113,6 +212,10 @@ namespace MyBot
                     if (flag)
                     {
                         TurnsWithoutTrolls = 0;
+                    }
+                    else
+                    {
+                        //Defend against portals
                     }
                 }
                 if (game.Turn % 40 == 1 && game.Turn > 1)

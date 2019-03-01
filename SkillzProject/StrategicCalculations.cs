@@ -22,6 +22,7 @@ namespace MyBot
         protected int EnemyAggressiveElfRangeFromCastle { get; private set; }
         protected int EnemyAggressiveElfRangeFromElf { get; private set; }
         protected int EnemyAggressiveElfRangeFromPortal { get; private set; }
+        protected int EnemyAggressiveTornadoRangeFromPortal { get; private set; }
         protected int EnemyAggressiveLavaGiantRangeFromCastle { get; private set; }
         protected int EnemyAggressiveLavaGiantRangeFromElf { get; private set; }
 
@@ -52,6 +53,7 @@ namespace MyBot
             CalculateEnemyAggressiveElfRangeFromCastle(game);
             CalculateEnemyAggressiveElfRangeFromElf(game);
             CalculateEnemyAggressiveElfRangeFromPortal(game);
+            CalculateEnemyAggressiveTornadoRangeFromPortal(game);
             CalculateEnemyAggressiveLavaGiantRangeFromCastle(game);
             CalculateEnemyAggressiveLavaGiantRangeFromElf(game);
         }
@@ -180,6 +182,12 @@ namespace MyBot
             EnemyAggressiveElfRangeFromElf = 500;
         }
         private void CalculateEnemyAggressiveElfRangeFromPortal(Game game)
+        {
+            //750
+            EnemyAggressiveElfRangeFromPortal = game.PortalSize + game.ElfAttackRange + game.ElfMaxSpeed * IceTrollSummonRate;
+            //1400
+        }
+        private void CalculateEnemyAggressiveTornadoRangeFromPortal(Game game)
         {
             //750
             EnemyAggressiveElfRangeFromPortal = game.PortalSize + game.ElfAttackRange + game.ElfMaxSpeed * IceTrollSummonRate;

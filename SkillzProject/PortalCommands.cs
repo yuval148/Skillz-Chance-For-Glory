@@ -61,23 +61,8 @@ namespace MyBot
                 if (TurnsWithoutTrolls >= IceTrollSummonRate)
                 {
                     bool flag = false;
-                    Creature[] enemyGiants = game.GetEnemyLavaGiants();
-                    if (enemyGiants != null && !flag)
-                    {
-                        foreach (Creature giant in enemyGiants)
-                        {
-                            if (giant.Distance(game.GetMyCastle()) <= EnemyAggressiveLavaGiantRangeFromCastle)
-                            {
-                                Portal currentBest = FindNearest(giant, game);
-                                if (currentBest != null && currentBest.CanSummonIceTroll() && !flag)
-                                {
-                                    currentBest.SummonIceTroll();
-                                    flag = true;
-                                }
-                                break;
-                            }
-                        }
-                    }
+
+                    //Defend against enemy elves
                     enemyElves = game.GetAllEnemyElves();
                     if (enemyElves != null)
                     {
@@ -133,6 +118,8 @@ namespace MyBot
                             }
                         }
                     }
+
+                    //Defend against tornadoes
                     Tornado[] enemyTornadoes = game.GetEnemyTornadoes();
                     if (enemyTornadoes != null)
                     {
@@ -189,6 +176,83 @@ namespace MyBot
                         }
                     }
 
+                    //Defend against portals
+                    Portal[] enemyPortals = game.GetEnemyPortals();
+                    if (enemyPortals != null)
+                    {
+                        Portal currentTarget = null;
+                        Portal summoner = null;
+                        foreach (Portal enemyPortal in enemyPortals)
+                        {
+                            if (enemyPortal.Location == null)
+                            {
+                                continue;
+                            }
+                            foreach (Portal current in portals)
+                            {
+                                if (!IsWorthIt(current, game))
+                                {
+                                    continue;
+                                }
+                                if (enemyPortal.Distance(current) <= EnemyAggressiveElfRangeFromPortal)
+                                {
+                                    if (currentTarget == null)
+                                    {
+                                        currentTarget = enemyPortal;
+                                        summoner = current;
+                                    }
+                                    else
+                                    {
+                                        if (currentTarget.Distance(game.GetMyCastle()) > enemyPortal.Distance(game.GetMyCastle()))
+                                        {
+                                            currentTarget = enemyPortal;
+                                            summoner = current;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        if (currentTarget != null)
+                        {
+                            foreach (Portal current in portals)
+                            {
+                                if (!IsWorthIt(current, game))
+                                {
+                                    continue;
+                                }
+                                if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
+                                {
+                                    summoner = current;
+                                }
+                            }
+                            if (summoner != null && summoner.CanSummonTornado() && !flag)
+                            {
+                                summoner.SummonTornado();
+                                flag = true;
+                            }
+                        }
+                    }
+
+                    //Defend against lava giants
+                    Creature[] enemyGiants = game.GetEnemyLavaGiants();
+                    if (enemyGiants != null && !flag)
+                    {
+                        foreach (Creature giant in enemyGiants)
+                        {
+                            if (giant.Distance(game.GetMyCastle()) <= EnemyAggressiveLavaGiantRangeFromCastle)
+                            {
+                                Portal currentBest = FindNearest(giant, game);
+                                if (currentBest != null && currentBest.CanSummonIceTroll() && !flag)
+                                {
+                                    currentBest.SummonIceTroll();
+                                    flag = true;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    //Defend against enemy elves (close to castle)
                     if (enemyElves != null)
                     {
                         foreach (Elf elf in enemyElves)
@@ -212,10 +276,6 @@ namespace MyBot
                     if (flag)
                     {
                         TurnsWithoutTrolls = 0;
-                    }
-                    else
-                    {
-                        //Defend against portals
                     }
                 }
                 if (game.Turn % 40 == 1 && game.Turn > 1)

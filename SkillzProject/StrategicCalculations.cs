@@ -93,7 +93,31 @@ namespace MyBot
         }
         private void CalculateDefendRadius(Game game)
         {
-            DefendRadius = ((game.ElfMaxHealth / game.ElfAttackMultiplier) * game.ElfMaxSpeed / 2) + game.PortalSize + game.CastleSize;
+            //DefendRadius = ((game.ElfMaxHealth / game.ElfAttackMultiplier) * game.ElfMaxSpeed / 2) + game.PortalSize + game.CastleSize;
+            int maxDistance = -1;
+            GameObject myCastle = game.GetMyCastle();
+            foreach (Portal portal in game.GetMyPortals())
+            {
+                if (portal.Distance(game.GetMyCastle()) > maxDistance)
+                {
+                    maxDistance = portal.Distance(game.GetMyCastle());
+                }
+            }
+            if (maxDistance != -1)
+            {
+                if (maxDistance < MaxBuildRadius)
+                {
+                    DefendRadius = maxDistance;
+                }
+                else
+                {
+                    DefendRadius = MaxBuildRadius;
+                }
+            }
+            else
+            {
+                DefendRadius = ((game.ElfMaxHealth / game.ElfAttackMultiplier) * game.ElfMaxSpeed / 2) + game.PortalSize + game.CastleSize;
+            }
         }
         private void CalculateIceTrollSummonRate(Game game)
         {

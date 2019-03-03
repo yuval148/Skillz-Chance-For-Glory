@@ -104,7 +104,7 @@ namespace MyBot
                 }
                 else
                 {
-                    BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game, 1);
+                    BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game);
                 }
             }
             /*

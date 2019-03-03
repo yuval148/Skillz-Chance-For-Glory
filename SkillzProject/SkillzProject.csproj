@@ -30,8 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="SkillzAutocomplete %282%29">
-      <HintPath>..\..\..\..\Users\gurig\Downloads\SkillzAutocomplete (2).dll</HintPath>
+    <Reference Include="SkillzAutocomplete %283%29">
+      <HintPath>..\..\..\..\Users\gurig\Downloads\SkillzAutocomplete (3).dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

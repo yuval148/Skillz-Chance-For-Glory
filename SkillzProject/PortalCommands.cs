@@ -130,7 +130,7 @@ namespace MyBot
                     }
                 }
                 game.Debug("Average portals: " + (float)TotalPortals / game.Turn);
-                if ((game.Turn >= TheLongestDay && (TotalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 50 && game.GetMyMana() > 50))
+                if ((game.Turn >= TheLongestDay && (TotalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < PanicTrigger && game.GetMyMana() > 50))
                 {
                     Portal currentBest = FindNearest(game.GetEnemyCastle(), game, CreatureType.LavaGiant);
                     if (currentBest != null && currentBest.CanSummonLavaGiant())
@@ -178,7 +178,7 @@ namespace MyBot
         }
         public bool IsWorthIt(Portal portal, Game game, CreatureType desiredType)
         {
-            if (AllocatedMana > 0)
+            if (ZHell && AllocatedMana > 0)
             {
                 switch (desiredType)
                 {

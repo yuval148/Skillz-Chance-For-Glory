@@ -6,6 +6,7 @@ namespace MyBot
     {
         public int ManaWasted { get; set; }
         protected static int AllocatedMana { get; set; } = 0;
+        protected static bool ZHell = false;
         protected double BaseDegree { get; private set; }
         protected int DefendRadius { get; private set; }
         protected int DesiredPortalAmount { get; private set; }
@@ -18,6 +19,7 @@ namespace MyBot
         protected int MaxBuildRadius { get; private set; } 
         protected int MinManaForPortal { get; private set; }
         protected int MaxPotentialMana { get; private set; }
+        protected int PanicTrigger { get; private set; }
         protected int EnemyAggressivePortalRangeFromCastle { get; private set; }
         protected int EnemyAggressivePortalRangeFromElf { get; private set; }
         protected int EnemyAggressiveElfRangeFromCastle { get; private set; }
@@ -49,6 +51,7 @@ namespace MyBot
             CalculateIceTrollSummonRate(game);
             CalculateMinManaForPortal(game);
             CalculateMaxPotentialMana(game);
+            CalculatePanicTrigger(game);
             CalculateEnemyAggressivePortalRangeFromCastle(game);
             CalculateEnemyAggressivePortalRangeFromElf(game);
             CalculateEnemyAggressiveElfRangeFromCastle(game);
@@ -186,6 +189,17 @@ namespace MyBot
             else
             {
                 IdealManaPerTurn = 11;
+            }
+        }
+        private void CalculatePanicTrigger(Game game)
+        {
+            if (ZHell)
+            {
+                PanicTrigger = 50;
+            }
+            else
+            {
+                PanicTrigger = 40;
             }
         }
         private void CalculateEnemyAggressivePortalRangeFromCastle(Game game)

@@ -21,6 +21,7 @@ namespace MyBot
                 //Z...
                 if (game.GetEnemyTornadoes()[0].SuffocationPerTurn == 0)
                 {
+                    ZHell = true;
                     /*game.Debug("Charge!");
                     foreach (Elf elf in myElves)
                     {
@@ -132,13 +133,13 @@ namespace MyBot
             {
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             }
-            //End specific bot strategies
-            if (game.GetMyCastle().CurrentHealth < 40 && game.GetEnemyLivingElves().Length == 0)
+            if (ZHell && game.GetMyCastle().CurrentHealth < 40 && game.GetEnemyLivingElves().Length == 0)
             {
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 9999, 9999);
                 DefendAgainst(game.GetEnemyPortals(), game, myElves, 9999, 9999);
                 ChanceForGlory(game, myElves);
             }
+            //End specific bot strategies
             /*
              * Build fountains:
              * If we have less mana than the desired mana per turn, the offensive elf will build mana fountains
@@ -348,9 +349,9 @@ namespace MyBot
                     {
                         continue;
                     }
-                    if (creature.Distance(game.GetMyCastle()) <= MaxBuildRadius && (creature.Distance(game.GetMyCastle()) <= range || creature.Distance(myElves[i]) <= elfRange))
+                    if ((!ZHell || creature.Distance(game.GetMyCastle()) <= MaxBuildRadius) && (creature.Distance(game.GetMyCastle()) <= range || creature.Distance(myElves[i]) <= elfRange))
                     {
-                        if (System.Array.Exists(defult, element => element == creature))
+                        if (ZHell && System.Array.Exists(defult, element => element == creature))
                         {
                             game.Debug(creature + " is already a target");
                             /*if (creature.Distance(myElves[i]) + 100 < minDist[i])

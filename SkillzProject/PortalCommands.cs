@@ -2,6 +2,8 @@
 
 namespace MyBot
 {
+    public enum CreatureType { LavaGiant, IceTroll, Tornado }
+
     class PortalCommands : StrategicCalculations
     {
         public int TotalPortals { get; set; } = 0;
@@ -35,8 +37,6 @@ namespace MyBot
                 if (MazganBot)
                 {
                     //Mazgan bot...
-                    //Technically, we should just add DefendAgainstPortals using Tornadoes, but I'll do it later.
-                    //Right now, I just want to beat this bot.
                     if (game.Turn == 1)
                     {
                         foreach (Portal portal in portals)
@@ -64,174 +64,13 @@ namespace MyBot
 
                     //Defend against enemy elves
                     enemyElves = game.GetAllEnemyElves();
-                    if (enemyElves != null)
-                    {
-                        Elf currentTarget = null;
-                        Portal summoner = null;
-                        foreach (Elf elf in enemyElves)
-                        {
-                            if (elf.Location == null)
-                            {
-                                continue;
-                            }
-                            foreach (Portal current in portals)
-                            {
-                                if (!IsWorthIt(current, game))
-                                {
-                                    continue;
-                                }
-                                if (elf.Distance(current) <= EnemyAggressiveElfRangeFromPortal)
-                                {
-                                    if (currentTarget == null)
-                                    {
-                                        currentTarget = elf;
-                                        summoner = current;
-                                    }
-                                    else
-                                    {
-                                        if (currentTarget.Distance(game.GetMyCastle()) > elf.Distance(game.GetMyCastle()))
-                                        {
-                                            currentTarget = elf;
-                                            summoner = current;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (currentTarget != null)
-                        {
-                            foreach (Portal current in portals)
-                            {
-                                if (!IsWorthIt(current, game))
-                                {
-                                    continue;
-                                }
-                                if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
-                                {
-                                    summoner = current;
-                                }
-                            }
-                            if (summoner != null && summoner.CanSummonIceTroll() && !flag)
-                            {
-                                summoner.SummonIceTroll();
-                                flag = true;
-                            }
-                        }
-                    }
+                    DefendAgainst(enemyElves, EnemyAggressiveElfRangeFromPortal, CreatureType.IceTroll, portals, ref flag, game);
 
                     //Defend against tornadoes
-                    Tornado[] enemyTornadoes = game.GetEnemyTornadoes();
-                    if (enemyTornadoes != null)
-                    {
-                        Tornado currentTarget = null;
-                        Portal summoner = null;
-                        foreach (Tornado tornado in enemyTornadoes)
-                        {
-                            if (tornado.Location == null)
-                            {
-                                continue;
-                            }
-                            foreach (Portal current in portals)
-                            {
-                                if (!IsWorthIt(current, game))
-                                {
-                                    continue;
-                                }
-                                if (tornado.Distance(current) <= EnemyAggressiveTornadoRangeFromPortal)
-                                {
-                                    if (currentTarget == null)
-                                    {
-                                        currentTarget = tornado;
-                                        summoner = current;
-                                    }
-                                    else
-                                    {
-                                        if (currentTarget.Distance(game.GetMyCastle()) > tornado.Distance(game.GetMyCastle()))
-                                        {
-                                            currentTarget = tornado;
-                                            summoner = current;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (currentTarget != null)
-                        {
-                            foreach (Portal current in portals)
-                            {
-                                if (!IsWorthIt(current, game))
-                                {
-                                    continue;
-                                }
-                                if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
-                                {
-                                    summoner = current;
-                                }
-                            }
-                            if (summoner != null && summoner.CanSummonIceTroll() && !flag)
-                            {
-                                summoner.SummonIceTroll();
-                                flag = true;
-                            }
-                        }
-                    }
+                    DefendAgainst(game.GetEnemyTornadoes(), EnemyAggressiveTornadoRangeFromPortal, CreatureType.IceTroll, portals, ref flag, game);
 
                     //Defend against portals
-                    Portal[] enemyPortals = game.GetEnemyPortals();
-                    if (enemyPortals != null)
-                    {
-                        Portal currentTarget = null;
-                        Portal summoner = null;
-                        foreach (Portal enemyPortal in enemyPortals)
-                        {
-                            if (enemyPortal.Location == null)
-                            {
-                                continue;
-                            }
-                            foreach (Portal current in portals)
-                            {
-                                if (!IsWorthIt(current, game))
-                                {
-                                    continue;
-                                }
-                                if (enemyPortal.Distance(current) <= EnemyAggressiveElfRangeFromPortal)
-                                {
-                                    if (currentTarget == null)
-                                    {
-                                        currentTarget = enemyPortal;
-                                        summoner = current;
-                                    }
-                                    else
-                                    {
-                                        if (currentTarget.Distance(game.GetMyCastle()) > enemyPortal.Distance(game.GetMyCastle()))
-                                        {
-                                            currentTarget = enemyPortal;
-                                            summoner = current;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        if (currentTarget != null)
-                        {
-                            foreach (Portal current in portals)
-                            {
-                                if (!IsWorthIt(current, game))
-                                {
-                                    continue;
-                                }
-                                if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
-                                {
-                                    summoner = current;
-                                }
-                            }
-                            if (summoner != null && summoner.CanSummonTornado() && !flag)
-                            {
-                                summoner.SummonTornado();
-                                flag = true;
-                            }
-                        }
-                    }
+                    DefendAgainst(game.GetEnemyPortals(), EnemyAggressiveElfRangeFromPortal, CreatureType.Tornado, portals, ref flag, game);
 
                     //Defend against lava giants
                     Creature[] enemyGiants = game.GetEnemyLavaGiants();
@@ -242,7 +81,7 @@ namespace MyBot
                             if (giant.Distance(game.GetMyCastle()) <= EnemyAggressiveLavaGiantRangeFromCastle)
                             {
                                 Portal currentBest = FindNearest(giant, game);
-                                if (currentBest != null && currentBest.CanSummonIceTroll() && !flag)
+                                if (currentBest != null && !flag && currentBest.CanSummonIceTroll())
                                 {
                                     currentBest.SummonIceTroll();
                                     flag = true;
@@ -353,6 +192,88 @@ namespace MyBot
                 }
             }
             return health > 0;
+        }
+        public void DefendAgainst(GameObject[] targets, float aggressiveRange, CreatureType defenderType, Portal[] portals, ref bool flag, Game game)
+        {
+            if (targets != null)
+            {
+                GameObject currentTarget = null;
+                Portal summoner = null;
+                foreach (GameObject target in targets)
+                {
+                    if (target.Location == null)
+                    {
+                        continue;
+                    }
+                    foreach (Portal current in portals)
+                    {
+                        if (!IsWorthIt(current, game))
+                        {
+                            continue;
+                        }
+                        if (target.Distance(current) <= aggressiveRange)
+                        {
+                            if (currentTarget == null)
+                            {
+                                currentTarget = target;
+                                summoner = current;
+                            }
+                            else
+                            {
+                                if (currentTarget.Distance(game.GetMyCastle()) > target.Distance(game.GetMyCastle()))
+                                {
+                                    currentTarget = target;
+                                    summoner = current;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (currentTarget != null)
+                {
+                    foreach (Portal current in portals)
+                    {
+                        if (!IsWorthIt(current, game))
+                        {
+                            continue;
+                        }
+                        if (current.Distance(currentTarget) < summoner.Distance(currentTarget))
+                        {
+                            summoner = current;
+                        }
+                    }
+                    if (summoner != null && !flag)
+                    {
+                        switch (defenderType)
+                        {
+                            case CreatureType.LavaGiant:
+                                game.Debug("This just... doesn't make any sense.");
+                                if (summoner.CanSummonLavaGiant())
+                                {
+                                    summoner.SummonLavaGiant();
+                                    flag = true;
+                                }
+                                break;
+                            case CreatureType.IceTroll:
+                                if (summoner.CanSummonIceTroll())
+                                {
+                                    summoner.SummonIceTroll();
+                                    flag = true;
+                                }
+                                break;
+                            case CreatureType.Tornado:
+                                if (summoner.CanSummonTornado())
+                                {
+                                    summoner.SummonTornado();
+                                    flag = true;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+            }
         }
     }
 }

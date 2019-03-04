@@ -80,7 +80,7 @@ namespace MyBot
                         {
                             if (giant.Distance(game.GetMyCastle()) <= EnemyAggressiveLavaGiantRangeFromCastle)
                             {
-                                Portal currentBest = FindNearest(giant, game);
+                                Portal currentBest = FindNearest(giant, game, CreatureType.IceTroll);
                                 if (currentBest != null && !flag && currentBest.CanSummonIceTroll())
                                 {
                                     currentBest.SummonIceTroll();
@@ -102,7 +102,7 @@ namespace MyBot
                             }
                             if (elf.Distance(game.GetMyCastle()) <= EnemyAggressiveElfRangeFromCastle)
                             {
-                                Portal currentBest = FindNearest(game.GetMyCastle(), game);
+                                Portal currentBest = FindNearest(game.GetMyCastle(), game, CreatureType.IceTroll);
                                 if (currentBest != null && currentBest.CanSummonIceTroll() && !flag)
                                 {
                                     currentBest.SummonIceTroll();
@@ -119,7 +119,7 @@ namespace MyBot
                 }
                 if (game.Turn % 40 == 1 && game.Turn > 1)
                 {
-                    Portal currentBest = FindNearest(game.GetEnemyCastle(), game);
+                    Portal currentBest = FindNearest(game.GetEnemyCastle(), game, CreatureType.LavaGiant);
                     if (currentBest != null && currentBest.CanSummonLavaGiant())
                     {
                         currentBest.SummonLavaGiant();
@@ -132,7 +132,7 @@ namespace MyBot
                 game.Debug("Average portals: " + (float)TotalPortals / game.Turn);
                 if ((game.Turn >= TheLongestDay && (TotalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 40 && game.GetMyMana() > 50))
                 {
-                    Portal currentBest = FindNearest(game.GetEnemyCastle(), game);
+                    Portal currentBest = FindNearest(game.GetEnemyCastle(), game, CreatureType.LavaGiant);
                     if (currentBest != null && currentBest.CanSummonLavaGiant())
                     {
                         currentBest.SummonLavaGiant();
@@ -147,13 +147,13 @@ namespace MyBot
                 }
             } // End of if (portals.Length >= 1)
         }
-        public Portal FindNearest(GameObject gameObject, Game game)
+        public Portal FindNearest(GameObject gameObject, Game game, CreatureType creatureType)
         {
             Portal[] portals = game.GetMyPortals();
             Portal currentBest = null;
             foreach (Portal current in portals)
             {
-                if (IsWorthIt(current, game))
+                if (IsWorthIt(current, game, creatureType))
                 {
                     currentBest = current;
                     break;
@@ -165,7 +165,7 @@ namespace MyBot
             }
             foreach (Portal current in portals)
             {
-                if (!IsWorthIt(current, game))
+                if (!IsWorthIt(current, game, creatureType))
                 {
                     continue;
                 }
@@ -176,8 +176,34 @@ namespace MyBot
             }
             return currentBest;
         }
-        public bool IsWorthIt(Portal portal, Game game)
+        public bool IsWorthIt(Portal portal, Game game, CreatureType desiredType)
         {
+            if (AllocatedMana > 0)
+            {
+                switch (desiredType)
+                {
+                    case CreatureType.LavaGiant:
+                        if (game.GetMyMana() - AllocatedMana < game.LavaGiantCost)
+                        {
+                            return false;
+                        }
+                        break;
+                    case CreatureType.IceTroll:
+                        if (game.GetMyMana() - AllocatedMana < game.IceTrollCost)
+                        {
+                            return false;
+                        }
+                        break;
+                    case CreatureType.Tornado:
+                        if (game.GetMyMana() - AllocatedMana < game.TornadoCost)
+                        {
+                            return false;
+                        }
+                        break;
+                    default:
+                        break;
+                }
+            }
             int health = portal.CurrentHealth;
             foreach (var elf in game.GetEnemyLivingElves())
             {
@@ -207,7 +233,7 @@ namespace MyBot
                     }
                     foreach (Portal current in portals)
                     {
-                        if (!IsWorthIt(current, game))
+                        if (!IsWorthIt(current, game, defenderType))
                         {
                             continue;
                         }
@@ -233,7 +259,7 @@ namespace MyBot
                 {
                     foreach (Portal current in portals)
                     {
-                        if (!IsWorthIt(current, game))
+                        if (!IsWorthIt(current, game, defenderType))
                         {
                             continue;
                         }

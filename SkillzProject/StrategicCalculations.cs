@@ -5,6 +5,7 @@ namespace MyBot
     abstract class StrategicCalculations : Math
     {
         public int ManaWasted { get; set; }
+        protected static int AllocatedMana { get; set; } = 0;
         protected double BaseDegree { get; private set; }
         protected int DefendRadius { get; private set; }
         protected int DesiredPortalAmount { get; private set; }
@@ -152,7 +153,7 @@ namespace MyBot
         }
         private void CalculateMinManaForPortal(Game game)
         {
-            if (game.GetMyself().ManaPerTurn <= 8)
+            if (game.GetMyself().ManaPerTurn <= DesiredManaPerTurn)
             {
                 MinManaForPortal = game.ManaFountainCost * ((game.ManaFountainManaPerTurn * (1 + (8 - game.DefaultManaPerTurn) / game.ManaFountainManaPerTurn) - (game.GetMyself().ManaPerTurn - game.DefaultManaPerTurn)) / game.ManaFountainManaPerTurn);
             }

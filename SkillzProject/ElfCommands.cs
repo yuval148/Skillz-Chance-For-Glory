@@ -16,6 +16,48 @@ namespace MyBot
                 return;
             }
             //Specific bot strategies
+            try
+            {
+                //Z...
+                if (game.GetEnemyTornadoes()[0].SuffocationPerTurn == 0)
+                {
+                    /*game.Debug("Charge!");
+                    foreach (Elf elf in myElves)
+                    {
+                        if (elf.InAttackRange(game.GetEnemyCastle()))
+                        {
+                            game.Debug("Attacked");
+                            elf.Attack(game.GetEnemyCastle());
+                        }
+                        else if (elf.CanCastSpeedUp())
+                        {
+                            game.Debug("Charged");
+                            elf.CastSpeedUp();
+                        }
+                        else if (elf.CanCastInvisibility())
+                        {
+                            game.Debug("Hid in plain sight");
+                            elf.CastInvisibility();
+                        }
+                        else
+                        {
+                            game.Debug("Walked");
+                            elf.MoveTo(game.GetEnemyCastle());
+                        }
+                    }*/
+                    if (game.GetMyManaFountains().Length < 2)
+                    {
+                        Elf[] firstElf = new Elf[1];
+                        firstElf[0] = myElves[0];
+                        DefendAgainst(game.GetEnemyTornadoes(), game, firstElf, 9999, 9999);
+                    }
+                    else
+                    {
+                        DefendAgainst(game.GetEnemyTornadoes(), game, myElves, 9999, 9999, false);
+                    }
+                }
+            }
+            catch { }
             if (game.CastleMaxHealth <= 2)
             {
                 //Labyrinth...
@@ -91,15 +133,22 @@ namespace MyBot
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             }
             //End specific bot strategies
+            if (game.GetMyCastle().CurrentHealth < 40 && game.GetEnemyLivingElves().Length == 0)
+            {
+                DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 9999, 9999);
+                DefendAgainst(game.GetEnemyPortals(), game, myElves, 9999, 9999);
+                ChanceForGlory(game, myElves);
+            }
             /*
              * Build fountains:
              * If we have less mana than the desired mana per turn, the offensive elf will build mana fountains
              * while the builder builds portals. 
-             */ 
+             */
             if (game.GetMyself().ManaPerTurn <= DesiredManaPerTurn && !(game.GetMyself().ManaPerTurn == 0 && game.GetMyMana() < game.ManaFountainCost))
             {
                 if (myElves[myElves.Length - 1].CanBuildManaFountain() && !myElves[myElves.Length - 1].AlreadyActed)
                 {
+                    AllocatedMana = 0;
                     myElves[myElves.Length - 1].BuildManaFountain();
                 }
                 else
@@ -124,6 +173,7 @@ namespace MyBot
                     {
                         if (CanBuild(myElves[0], game))
                         {
+                            AllocatedMana = 0;
                             myElves[0].BuildPortal();
                         }
                         else
@@ -137,10 +187,12 @@ namespace MyBot
                 {
                     if (game.GetMyMana() > MinManaForPortal)
                     {
+                        AllocatedMana = MinManaForPortal;
                         if (PortalsInRadius(MinPortalBuildRadius, game, 1500) < DesiredPortalAmount)
                         {
                             if (CanBuild(myElves[0], game))
                             {
+                                AllocatedMana = 0;
                                 myElves[0].BuildPortal();
                             }
                             else
@@ -152,6 +204,7 @@ namespace MyBot
                         {
                             if (CanBuild(myElves[0], game, Building.Fountain))
                             {
+                                AllocatedMana = 0;
                                 myElves[0].BuildManaFountain();
                             }
                             else
@@ -163,6 +216,7 @@ namespace MyBot
                         {
                             if (CanBuild(myElves[0], game))
                             {
+                                AllocatedMana = 0;
                                 myElves[0].BuildPortal();
                             }
                             else
@@ -196,8 +250,9 @@ namespace MyBot
             DefendAgainst(game.GetEnemyLavaGiants(), game, myElves, EnemyAggressiveLavaGiantRangeFromCastle, EnemyAggressiveLavaGiantRangeFromElf);
             /*
              * Next, we defend our portals from elves near them.
-             */ 
+             */
             DefendOn(game.GetMyPortals(), game.GetEnemyLivingElves(), myElves, EnemyAggressiveElfRangeFromPortal);
+            DefendOn(game.GetMyPortals(), game.GetEnemyTornadoes(), myElves, EnemyAggressiveTornadoRangeFromPortal);
             /*
              * Elf 0, our builder, will then proceed to try and build more portals (in case we currently don't have
              * enough mana, our elves will prioritize looking at enemies over building, but our builder shouldn't).
@@ -269,7 +324,7 @@ namespace MyBot
         /// <param name="myElves"></param>
         /// <param name="range"></param>
         /// <param name="elfRange"></param>
-        public void DefendAgainst(GameObject[] targets, Game game, Elf[] myElves, int range = 1500, int elfRange = 0)
+        public void DefendAgainst(GameObject[] targets, Game game, Elf[] myElves, int range = 1500, int elfRange = 0, bool canUseBoost = true, bool forceUseBoost = false)
         {
             GameObject[] defult = new GameObject[myElves.Length];
             int[] minDist = new int[myElves.Length];
@@ -325,7 +380,7 @@ namespace MyBot
                 }
                 else
                 {
-                    if (game.GetMyMana() > myElves[i].Distance(defult[i]) / 3)
+                    if ((canUseBoost && game.GetMyMana() > myElves[i].Distance(defult[i]) / 3) || forceUseBoost)
                     {
                         if (myElves[i].CurrentSpells.Length == 0 && myElves[i].CanCastSpeedUp())
                         {
@@ -556,6 +611,41 @@ namespace MyBot
                 }
             }
             return true;
+        }
+        void ChanceForGlory(Game game, Elf[] myElves)
+        {
+            game.Debug("Charge!");
+            foreach (Elf elf in myElves)
+            {
+                if (elf == null)
+                {
+                    continue;
+                }
+                if (elf.AlreadyActed)
+                {
+                    continue;
+                }
+                if (elf.InAttackRange(game.GetEnemyCastle()))
+                {
+                    game.Debug("Attacked");
+                    elf.Attack(game.GetEnemyCastle());
+                }
+                else if (elf.CanCastSpeedUp())
+                {
+                    game.Debug("Charged");
+                    elf.CastSpeedUp();
+                }
+                else if (elf.CanCastInvisibility())
+                {
+                    game.Debug("Hid in plain sight");
+                    elf.CastInvisibility();
+                }
+                else
+                {
+                    game.Debug("Walked");
+                    elf.MoveTo(game.GetEnemyCastle());
+                }
+            }
         }
     }
 }

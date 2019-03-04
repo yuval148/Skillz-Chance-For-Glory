@@ -226,8 +226,8 @@ namespace MyBot
                             nearestElf = item;
                         }
                     }
-                    double degree = DegreeBetween(nearestElf.Location, game.GetMyCastle().Location);
-                    myElves[i].MoveTo(Cis(DefendRadius, degree, game.GetMyCastle().Location));
+                    //double degree = DegreeBetween(nearestElf.Location, game.GetMyCastle().Location);
+                    myElves[i].MoveTo(Cis(DefendRadius, BaseDegree, game.GetMyCastle().Location));
                 }
             }
             /*

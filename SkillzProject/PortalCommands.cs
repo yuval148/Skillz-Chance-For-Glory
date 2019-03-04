@@ -130,7 +130,7 @@ namespace MyBot
                     }
                 }
                 game.Debug("Average portals: " + (float)TotalPortals / game.Turn);
-                if ((game.Turn >= TheLongestDay && (TotalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 40 && game.GetMyMana() > 50))
+                if ((game.Turn >= TheLongestDay && (TotalPortals / game.Turn <= portals.Length)) || (game.GetMyCastle().CurrentHealth < 50 && game.GetMyMana() > 50))
                 {
                     Portal currentBest = FindNearest(game.GetEnemyCastle(), game, CreatureType.LavaGiant);
                     if (currentBest != null && currentBest.CanSummonLavaGiant())

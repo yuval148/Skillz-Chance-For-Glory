@@ -332,26 +332,37 @@ namespace MyBot
             {
                 minDist[i] = int.MaxValue;
             }
-            foreach (var creature in targets)
+            for (int i = 0; i < myElves.Length; i++)
             {
-                if (creature == null)
+                if (myElves[i] == null)
                 {
                     continue;
                 }
-                if (creature.GetLocation() == null)
+                foreach (var creature in targets)
                 {
-                    continue;
-                }
-                for (int i = 0; i < myElves.Length; i++)
-                {
-                    if (creature.Distance(game.GetMyCastle()) <= range || creature.Distance(myElves[i]) <= elfRange)
+                    if (creature == null)
                     {
-                        if (myElves[i] == null)
+                        continue;
+                    }
+                    if (creature.GetLocation() == null)
+                    {
+                        continue;
+                    }
+                    if (creature.Distance(game.GetMyCastle()) <= MaxBuildRadius && (creature.Distance(game.GetMyCastle()) <= range || creature.Distance(myElves[i]) <= elfRange))
+                    {
+                        if (System.Array.Exists(defult, element => element == creature))
                         {
-                            continue;
+                            game.Debug(creature + " is already a target");
+                            /*if (creature.Distance(myElves[i]) + 100 < minDist[i])
+                            {
+                                game.Debug("Target " + i + " is now " + creature);
+                                defult[i] = creature;
+                                minDist[i] = creature.Distance(myElves[i]);
+                            }*/
                         }
-                        if (creature.Distance(myElves[i]) < minDist[i])
+                        else if (creature.Distance(myElves[i]) < minDist[i])
                         {
+                            game.Debug("Target " + i + " is now " + creature);
                             defult[i] = creature;
                             minDist[i] = creature.Distance(myElves[i]);
                         }

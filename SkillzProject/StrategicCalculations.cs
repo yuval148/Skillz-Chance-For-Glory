@@ -23,6 +23,7 @@ namespace MyBot
         protected int BadMarginOfError { get; private set; }
         protected int EnemyAggressivePortalRangeFromCastle { get; private set; }
         protected int EnemyAggressivePortalRangeFromElf { get; private set; }
+        protected int EnemyAggressivePortalRangeFromPortal { get; private set; }
         protected int EnemyVeryAggressivePortalRangeFromCastle { get; private set; }
         protected int EnemyVeryAggressivePortalRangeFromElf { get; private set; }
         protected int EnemyAggressiveElfRangeFromCastle { get; private set; }
@@ -58,6 +59,7 @@ namespace MyBot
             CalculateBadMarginOfError(game);
             CalculateEnemyAggressivePortalRangeFromCastle(game);
             CalculateEnemyAggressivePortalRangeFromElf(game);
+            CalculateEnemyAggressivePortalRangeFromPortal(game);
             CalculateEnemyVeryAggressivePortalRangeFromCastle(game);
             CalculateEnemyVeryAggressivePortalRangeFromElf(game);
             CalculateEnemyAggressiveElfRangeFromCastle(game);
@@ -219,6 +221,10 @@ namespace MyBot
         private void CalculateEnemyAggressivePortalRangeFromElf(Game game)
         {
             EnemyAggressivePortalRangeFromElf = 700;
+        }
+        private void CalculateEnemyAggressivePortalRangeFromPortal(Game game)
+        {
+            EnemyAggressivePortalRangeFromPortal = 700;
         }
         private void CalculateEnemyVeryAggressivePortalRangeFromCastle(Game game)
         {

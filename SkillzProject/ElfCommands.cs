@@ -16,129 +16,7 @@ namespace MyBot
                 return;
             }
             //Specific bot strategies
-            try
-            {
-                //Z...
-                if (game.GetEnemyTornadoes()[0].SuffocationPerTurn == 0)
-                {
-                    ZHell = true;
-                    /*game.Debug("Charge!");
-                    foreach (Elf elf in myElves)
-                    {
-                        if (elf.InAttackRange(game.GetEnemyCastle()))
-                        {
-                            game.Debug("Attacked");
-                            elf.Attack(game.GetEnemyCastle());
-                        }
-                        else if (elf.CanCastSpeedUp())
-                        {
-                            game.Debug("Charged");
-                            elf.CastSpeedUp();
-                        }
-                        else if (elf.CanCastInvisibility())
-                        {
-                            game.Debug("Hid in plain sight");
-                            elf.CastInvisibility();
-                        }
-                        else
-                        {
-                            game.Debug("Walked");
-                            elf.MoveTo(game.GetEnemyCastle());
-                        }
-                    }*/
-                    if (game.GetMyManaFountains().Length < 2)
-                    {
-                        Elf[] firstElf = new Elf[1];
-                        firstElf[0] = myElves[0];
-                        DefendAgainst(game.GetEnemyTornadoes(), game, firstElf, 9999, 9999);
-                    }
-                    else
-                    {
-                        DefendAgainst(game.GetEnemyTornadoes(), game, myElves, 9999, 9999, false);
-                    }
-                }
-            }
-            catch { }
-            if (game.CastleMaxHealth <= 2)
-            {
-                //Labyrinth...
-                foreach (var elf in myElves)
-                {
-                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
-                    {
-                        elf.CastInvisibility();
-                        continue;
-                    }
-                    if (elf.InAttackRange(game.GetEnemyCastle()))
-                    {
-                        elf.Attack(game.GetEnemyCastle());
-                    }
-                    else
-                    {
-                        elf.MoveTo(game.GetEnemyCastle());
-                    }
-                }
-            }
-            if (game.PortalCost >= 10000)
-            {
-                //HoraMana...
-                foreach (var elf in myElves)
-                {
-                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
-                    {
-                        elf.CastInvisibility();
-                        continue;
-                    }
-                    if (elf.InAttackRange(game.GetEnemyCastle()))
-                    {
-                        elf.Attack(game.GetEnemyCastle());
-                    }
-                    else
-                    {
-                        elf.MoveTo(game.GetEnemyCastle());
-                    }
-                }
-            }
-            if (game.ElfMaxSpeed == 0)
-            {
-                //Trap...
-                foreach (var elf in myElves)
-                {
-                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility() && !elf.AlreadyActed)
-                    {
-                        IceTroll[] iceTrolls = game.GetEnemyIceTrolls();
-                        foreach (var item in iceTrolls)
-                        {
-                            if (item.Distance(elf) <= game.IceTrollAttackRange)
-                            {
-                                elf.CastInvisibility();
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
-            if (game.ElfMaxSpeed <= 5)
-            {
-                //IGotStamana...
-                foreach (var elf in myElves)
-                {
-                    if (elf.CurrentSpells.Length == 0 && elf.CanCastSpeedUp() && game.GetMyMana() > game.ManaFountainCost && !elf.AlreadyActed)
-                    {
-                        elf.CastSpeedUp();
-                    }
-                }
-            }
-            if (game.DefaultManaPerTurn <= 0)
-            {
-                DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
-            }
-            if (ZHell && game.GetMyCastle().CurrentHealth < 40 && game.GetEnemyLivingElves().Length == 0)
-            {
-                DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 9999, 9999);
-                DefendAgainst(game.GetEnemyPortals(), game, myElves, 9999, 9999);
-                ChanceForGlory(game, myElves);
-            }
+            SpecificBotStrategies(game, myElves);
             //End specific bot strategies
             /*
              * Build fountains:
@@ -302,6 +180,132 @@ namespace MyBot
                     continue;
                 }
                 BuildInRadius(MinPortalBuildRadius, elf, game);
+            }
+        }
+        void SpecificBotStrategies(Game game, Elf[] myElves)
+        {
+            try
+            {
+                //Z...
+                if (game.GetEnemyTornadoes()[0].SuffocationPerTurn == 0)
+                {
+                    ZHell = true;
+                    /*game.Debug("Charge!");
+                    foreach (Elf elf in myElves)
+                    {
+                        if (elf.InAttackRange(game.GetEnemyCastle()))
+                        {
+                            game.Debug("Attacked");
+                            elf.Attack(game.GetEnemyCastle());
+                        }
+                        else if (elf.CanCastSpeedUp())
+                        {
+                            game.Debug("Charged");
+                            elf.CastSpeedUp();
+                        }
+                        else if (elf.CanCastInvisibility())
+                        {
+                            game.Debug("Hid in plain sight");
+                            elf.CastInvisibility();
+                        }
+                        else
+                        {
+                            game.Debug("Walked");
+                            elf.MoveTo(game.GetEnemyCastle());
+                        }
+                    }*/
+                    if (game.GetMyManaFountains().Length < 2)
+                    {
+                        Elf[] firstElf = new Elf[1];
+                        firstElf[0] = myElves[0];
+                        DefendAgainst(game.GetEnemyTornadoes(), game, firstElf, 9999, 9999);
+                    }
+                    else
+                    {
+                        DefendAgainst(game.GetEnemyTornadoes(), game, myElves, 9999, 9999, false);
+                    }
+                }
+            }
+            catch { }
+            if (game.CastleMaxHealth <= 2)
+            {
+                //Labyrinth...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
+                    {
+                        elf.CastInvisibility();
+                        continue;
+                    }
+                    if (elf.InAttackRange(game.GetEnemyCastle()))
+                    {
+                        elf.Attack(game.GetEnemyCastle());
+                    }
+                    else
+                    {
+                        elf.MoveTo(game.GetEnemyCastle());
+                    }
+                }
+            }
+            if (game.PortalCost >= 10000)
+            {
+                //HoraMana...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility())
+                    {
+                        elf.CastInvisibility();
+                        continue;
+                    }
+                    if (elf.InAttackRange(game.GetEnemyCastle()))
+                    {
+                        elf.Attack(game.GetEnemyCastle());
+                    }
+                    else
+                    {
+                        elf.MoveTo(game.GetEnemyCastle());
+                    }
+                }
+            }
+            if (game.ElfMaxSpeed == 0)
+            {
+                //Trap...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastInvisibility() && !elf.AlreadyActed)
+                    {
+                        IceTroll[] iceTrolls = game.GetEnemyIceTrolls();
+                        foreach (var item in iceTrolls)
+                        {
+                            if (item.Distance(elf) <= game.IceTrollAttackRange)
+                            {
+                                elf.CastInvisibility();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            if (game.ElfMaxSpeed <= 5)
+            {
+                //IGotStamana...
+                foreach (var elf in myElves)
+                {
+                    if (elf.CurrentSpells.Length == 0 && elf.CanCastSpeedUp() && game.GetMyMana() > game.ManaFountainCost && !elf.AlreadyActed)
+                    {
+                        elf.CastSpeedUp();
+                    }
+                }
+            }
+            if (game.DefaultManaPerTurn <= 0)
+            {
+                DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
+            }
+            if (ZHell && game.GetMyCastle().CurrentHealth < 40 && game.GetEnemyLivingElves().Length == 0)
+            {
+                DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 9999, 9999);
+                DefendAgainst(game.GetEnemyPortals(), game, myElves, 9999, 9999);
+                ChanceForGlory(game, myElves);
             }
         }
         /// <summary>

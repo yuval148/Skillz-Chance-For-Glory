@@ -23,41 +23,7 @@ namespace MyBot
             if (portals.Length >= 1)
             {
                 //Specific bot strategies
-                if (game.GetAllMyElves().Length == 0 && game.Turn < TheLongestDay)
-                {
-                    //HeProteccButAlsoAttacc...
-                    foreach (Portal portal in portals)
-                    {
-                        if (portal.CanSummonTornado())
-                        {
-                            portal.SummonTornado();
-                        }
-                    }
-                }
-                if (MazganBot)
-                {
-                    //Mazgan bot...
-                    if (game.Turn == 1)
-                    {
-                        foreach (Portal portal in portals)
-                        {
-                            if (portal.CanSummonTornado())
-                            {
-                                portal.SummonTornado();
-                            }
-                        }
-                    }
-                    else if (game.Turn < TheLongestDay)
-                    {
-                        foreach (Portal portal in portals)
-                        {
-                            if (portal.CanSummonIceTroll())
-                            {
-                                portal.SummonIceTroll();
-                            }
-                        }
-                    }
-                }
+                SpecificBotStrategies(game, portals);
                 if (TurnsWithoutTrolls >= IceTrollSummonRate)
                 {
                     bool flag = false;
@@ -147,6 +113,56 @@ namespace MyBot
                 }
             } // End of if (portals.Length >= 1)
         }
+        /// <summary>
+        /// Defends against specific bots.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="portals"></param>
+        void SpecificBotStrategies(Game game, Portal[] portals)
+        {
+            if (game.GetAllMyElves().Length == 0 && game.Turn < TheLongestDay)
+            {
+                //HeProteccButAlsoAttacc...
+                foreach (Portal portal in portals)
+                {
+                    if (portal.CanSummonTornado())
+                    {
+                        portal.SummonTornado();
+                    }
+                }
+            }
+            if (MazganBot)
+            {
+                //Mazgan bot...
+                if (game.Turn == 1)
+                {
+                    foreach (Portal portal in portals)
+                    {
+                        if (portal.CanSummonTornado())
+                        {
+                            portal.SummonTornado();
+                        }
+                    }
+                }
+                else if (game.Turn < TheLongestDay)
+                {
+                    foreach (Portal portal in portals)
+                    {
+                        if (portal.CanSummonIceTroll())
+                        {
+                            portal.SummonIceTroll();
+                        }
+                    }
+                }
+            }
+        }
+        /// <summary>
+        /// Finds the nearest valid portal near gameObject (a valid portal is one that can summon a creature of the chosen type).
+        /// </summary>
+        /// <param name="gameObject"></param>
+        /// <param name="game"></param>
+        /// <param name="creatureType"></param>
+        /// <returns></returns>
         public Portal FindNearest(GameObject gameObject, Game game, CreatureType creatureType)
         {
             Portal[] portals = game.GetMyPortals();
@@ -176,6 +192,13 @@ namespace MyBot
             }
             return currentBest;
         }
+        /// <summary>
+        /// Checks whether portal can and should summon a creature of the desired type.
+        /// </summary>
+        /// <param name="portal"></param>
+        /// <param name="game"></param>
+        /// <param name="desiredType"></param>
+        /// <returns></returns>
         public bool IsWorthIt(Portal portal, Game game, CreatureType desiredType)
         {
             if (ZHell && AllocatedMana > 0)
@@ -219,6 +242,15 @@ namespace MyBot
             }
             return health > 0;
         }
+        /// <summary>
+        /// Defends against all targets in aggresiveRange with creatures of defenderType, using portals.
+        /// </summary>
+        /// <param name="targets"></param>
+        /// <param name="aggressiveRange"></param>
+        /// <param name="defenderType"></param>
+        /// <param name="portals"></param>
+        /// <param name="flag"></param>
+        /// <param name="game"></param>
         public void DefendAgainst(GameObject[] targets, float aggressiveRange, CreatureType defenderType, Portal[] portals, ref bool flag, Game game)
         {
             if (targets != null)

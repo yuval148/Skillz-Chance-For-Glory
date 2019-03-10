@@ -449,7 +449,8 @@ namespace MyBot
             Location baseLocation = game.GetMyCastle().Location;
             Location target;
             double modifier = PI / 8;
-            for (int i = 1; i <= Ceiling(5 / degreeModifier); i++)
+            // Do not delete this
+            /*for (int i = 1; i <= Ceiling(5 / degreeModifier); i++)
             {
                 double temp = (i / 2) * Pow(-1, i) * modifier;
                 target = Cis(radius, BaseDegree + temp);
@@ -459,7 +460,7 @@ namespace MyBot
                 {
                     MoveToBuild(builder, game, target);
                 }
-            }
+            }*/
             modifier = PI / 40;
             for (int i = 1; i <= Ceiling(25 / degreeModifier); i++)
             {
@@ -472,7 +473,7 @@ namespace MyBot
                     MoveToBuild(builder, game, target);
                 }
             }
-            BuildInRadius(radius + 150, builder, game);
+            BuildInRadius(radius + game.PortalSize, builder, game);
         }
         /// <summary>
         /// A helper function for BuildInRadius.

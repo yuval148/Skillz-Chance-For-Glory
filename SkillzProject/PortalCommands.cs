@@ -36,7 +36,7 @@ namespace MyBot
                     DefendAgainst(game.GetEnemyTornadoes(), EnemyAggressiveTornadoRangeFromPortal, CreatureType.IceTroll, portals, ref flag, game);
 
                     //Defend against portals
-                    DefendAgainst(game.GetEnemyPortals(), EnemyAggressiveElfRangeFromPortal, CreatureType.Tornado, portals, ref flag, game);
+                    DefendAgainst(game.GetEnemyPortals(), EnemyAggressivePortalRangeFromPortal, CreatureType.Tornado, portals, ref flag, game);
 
                     //Defend against lava giants
                     Creature[] enemyGiants = game.GetEnemyLavaGiants();

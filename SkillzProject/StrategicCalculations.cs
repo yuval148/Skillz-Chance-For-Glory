@@ -5,8 +5,8 @@ namespace MyBot
     abstract class StrategicCalculations : Math
     {
         public int ManaWasted { get; set; }
-        protected static int AllocatedMana { get; set; } = 0;
         protected static bool ZHell = false;
+        protected static int AllocatedMana { get; set; } = 0;
         protected double BaseDegree { get; private set; }
         protected int DefendRadius { get; private set; }
         protected int DesiredPortalAmount { get; private set; }
@@ -20,8 +20,11 @@ namespace MyBot
         protected int MinManaForPortal { get; private set; }
         protected int MaxPotentialMana { get; private set; }
         protected int PanicTrigger { get; private set; }
+        protected int BadMarginOfError { get; private set; }
         protected int EnemyAggressivePortalRangeFromCastle { get; private set; }
         protected int EnemyAggressivePortalRangeFromElf { get; private set; }
+        protected int EnemyVeryAggressivePortalRangeFromCastle { get; private set; }
+        protected int EnemyVeryAggressivePortalRangeFromElf { get; private set; }
         protected int EnemyAggressiveElfRangeFromCastle { get; private set; }
         protected int EnemyAggressiveElfRangeFromElf { get; private set; }
         protected int EnemyAggressiveElfRangeFromPortal { get; private set; }
@@ -52,8 +55,11 @@ namespace MyBot
             CalculateMinManaForPortal(game);
             CalculateMaxPotentialMana(game);
             CalculatePanicTrigger(game);
+            CalculateBadMarginOfError(game);
             CalculateEnemyAggressivePortalRangeFromCastle(game);
             CalculateEnemyAggressivePortalRangeFromElf(game);
+            CalculateEnemyVeryAggressivePortalRangeFromCastle(game);
+            CalculateEnemyVeryAggressivePortalRangeFromElf(game);
             CalculateEnemyAggressiveElfRangeFromCastle(game);
             CalculateEnemyAggressiveElfRangeFromElf(game);
             CalculateEnemyAggressiveElfRangeFromPortal(game);
@@ -202,6 +208,10 @@ namespace MyBot
                 PanicTrigger = 40;
             }
         }
+        private void CalculateBadMarginOfError(Game game)
+        {
+            BadMarginOfError = 1500;
+        }
         private void CalculateEnemyAggressivePortalRangeFromCastle(Game game)
         {
             EnemyAggressivePortalRangeFromCastle = 3500;
@@ -209,6 +219,14 @@ namespace MyBot
         private void CalculateEnemyAggressivePortalRangeFromElf(Game game)
         {
             EnemyAggressivePortalRangeFromElf = 700;
+        }
+        private void CalculateEnemyVeryAggressivePortalRangeFromCastle(Game game)
+        {
+            EnemyVeryAggressivePortalRangeFromCastle = (int)(EnemyAggressivePortalRangeFromCastle / 1.5);
+        }
+        private void CalculateEnemyVeryAggressivePortalRangeFromElf(Game game)
+        {
+            EnemyVeryAggressivePortalRangeFromElf = (int)(EnemyAggressivePortalRangeFromElf / 1.5);
         }
         private void CalculateEnemyAggressiveElfRangeFromCastle(Game game)
         {

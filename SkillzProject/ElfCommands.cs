@@ -67,7 +67,7 @@ namespace MyBot
                     if (game.GetMyMana() > MinManaForPortal)
                     {
                         AllocatedMana = MinManaForPortal;
-                        if (PortalsInRadius(MinPortalBuildRadius, game, 1500) < DesiredPortalAmount)
+                        if (PortalsInRadius(MinPortalBuildRadius, game, BadMarginOfError) < DesiredPortalAmount)
                         {
                             if (CanBuild(myElves[0], game))
                             {
@@ -109,7 +109,7 @@ namespace MyBot
             /*
              * If we have enough mana, we hide our elves from enemies (close elves/ice trolls).
              */ 
-            if (game.GetMyMana() > 300)
+            if (game.GetMyMana() > 300) //Why 300?
             {
                 foreach (var elf in myElves)
                 {
@@ -182,6 +182,11 @@ namespace MyBot
                 BuildInRadius(MinPortalBuildRadius, elf, game);
             }
         }
+        /// <summary>
+        /// Defends against specific bots.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="portals"></param>
         void SpecificBotStrategies(Game game, Elf[] myElves)
         {
             try
@@ -317,7 +322,7 @@ namespace MyBot
         {
             GameObject[] enemyElves = game.GetEnemyLivingElves();
             GameObject[] enemyPortals = game.GetEnemyPortals();
-            DefendAgainst(enemyPortals, game, myElves, (int)(EnemyAggressivePortalRangeFromCastle / 1.5), (int)(EnemyAggressivePortalRangeFromElf / 1.5));
+            DefendAgainst(enemyPortals, game, myElves, EnemyVeryAggressivePortalRangeFromCastle, EnemyVeryAggressivePortalRangeFromElf);
             DefendAgainst(enemyElves, game, myElves, EnemyAggressiveElfRangeFromCastle, EnemyAggressiveElfRangeFromElf);
             DefendAgainst(enemyPortals, game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
         }
@@ -430,7 +435,7 @@ namespace MyBot
             if (ManaWasted >= MaxPotentialMana / 2)
             {
                 //game.Debug("Quit?");
-                if (radius > MaxPotentialMana - ManaWasted && radius > MinPortalBuildRadius + 300)
+                if (radius > MaxPotentialMana - ManaWasted && radius > MinPortalBuildRadius + game.PortalSize * 2)
                 {
                     //game.Debug("Quit!");
                     return;
@@ -628,6 +633,11 @@ namespace MyBot
             }
             return true;
         }
+        /// <summary>
+        /// Chrages thoughtlessly into the enemy.
+        /// </summary>
+        /// <param name="game"></param>
+        /// <param name="myElves"></param>
         void ChanceForGlory(Game game, Elf[] myElves)
         {
             game.Debug("Charge!");

@@ -9,10 +9,6 @@ namespace MyBot
         /// </summary>
         public int ManaWasted { get; set; }
         /// <summary>
-        /// temporal flag
-        /// </summary>
-        protected static bool ZHell = false;
-        /// <summary>
         /// allocated mana for portals
         /// </summary>
         protected static int AllocatedMana { get; set; } = 0;
@@ -262,7 +258,7 @@ namespace MyBot
         }
         private void CalculatePanicTrigger(Game game)
         {
-            if (ZHell)
+            if (true)
             {
                 PanicTrigger = 50;
             }

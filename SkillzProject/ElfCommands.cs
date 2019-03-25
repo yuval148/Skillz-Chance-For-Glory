@@ -194,7 +194,7 @@ namespace MyBot
                 //Z...
                 if (game.GetEnemyTornadoes()[0].SuffocationPerTurn == 0)
                 {
-                    ZHell = true;
+                    //ZHell = true;
                     /*game.Debug("Charge!");
                     foreach (Elf elf in myElves)
                     {
@@ -306,12 +306,12 @@ namespace MyBot
             {
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
             }
-            if (ZHell && game.GetMyCastle().CurrentHealth < 40 && game.GetEnemyLivingElves().Length == 0)
+            /*if (ZHell && game.GetMyCastle().CurrentHealth < 40 && game.GetEnemyLivingElves().Length == 0)
             {
                 DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 9999, 9999);
                 DefendAgainst(game.GetEnemyPortals(), game, myElves, 9999, 9999);
                 ChanceForGlory(game, myElves);
-            }
+            }*/
         }
         /// <summary>
         /// Runs defendAgainst against portals and elves using our normal consts.
@@ -358,9 +358,9 @@ namespace MyBot
                     {
                         continue;
                     }
-                    if ((!ZHell || creature.Distance(game.GetMyCastle()) <= MaxBuildRadius) && (creature.Distance(game.GetMyCastle()) <= range || creature.Distance(myElves[i]) <= elfRange))
+                    if ((!true || creature.Distance(game.GetMyCastle()) <= MaxBuildRadius) && (creature.Distance(game.GetMyCastle()) <= range || creature.Distance(myElves[i]) <= elfRange))
                     {
-                        if (ZHell && System.Array.Exists(defult, element => element == creature))
+                        if (false && System.Array.Exists(defult, element => element == creature))
                         {
                             game.Debug(creature + " is already a target");
                             /*if (creature.Distance(myElves[i]) + 100 < minDist[i])

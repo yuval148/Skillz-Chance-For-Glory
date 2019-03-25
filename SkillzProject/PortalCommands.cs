@@ -210,7 +210,7 @@ namespace MyBot
         /// <returns></returns>
         public bool IsWorthIt(Portal portal, Game game, CreatureType desiredType)
         {
-            if (ZHell && AllocatedMana > 0)
+            if (false && AllocatedMana > 0)
             {
                 switch (desiredType)
                 {

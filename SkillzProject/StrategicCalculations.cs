@@ -4,25 +4,86 @@ namespace MyBot
 {
     abstract class StrategicCalculations : Math
     {
+        /// <summary>
+        /// how much mana has been wated from the start
+        /// </summary>
         public int ManaWasted { get; set; }
+        /// <summary>
+        /// temporal flag
+        /// </summary>
         protected static bool ZHell = false;
+        /// <summary>
+        /// allocated mana for portals
+        /// </summary>
         protected static int AllocatedMana { get; set; } = 0;
+        /// <summary>
+        /// the angle between castles
+        /// </summary>
         protected double BaseDegree { get; private set; }
-        protected int DefendRadius { get; private set; }
+        /// <summary>
+        /// the first defend circle, only when we don't have any target
+        /// </summary>
+        protected int DefendRadius { get; private set; } 
+        /// <summary>
+        /// how much portals do we want to have, when amount is acommplished priorty lower
+        /// </summary>
         protected int DesiredPortalAmount { get; private set; }
+        /// <summary>
+        /// the amount of mana we want per turn, when acopmmplished priorty lower
+        /// </summary>
         protected int DesiredManaPerTurn { get; private set; }
+        /// <summary>
+        /// the max amount of mana we want per turn, when acopmmplished priorty zero
+        /// </summary>
         protected int IdealManaPerTurn { get; private set; }
+        /// <summary>
+        /// the max summon rate of icetroll
+        /// </summary>
         protected int IceTrollSummonRate { get; private set; }
+        /// <summary>
+        /// turn 600, the big attack
+        /// </summary>
         protected int TheLongestDay { get; private set; }
+        /// <summary>
+        /// the min radius for build portals
+        /// </summary>
         protected int MinPortalBuildRadius { get; private set; }
+        /// <summary>
+        /// the min radius for build mana fountain
+        /// </summary>
         protected int MinFountainBuildRadius { get; private set; }
+        /// <summary>
+        /// the max radius for build portals
+        /// </summary>
         protected int MaxBuildRadius { get; private set; } 
+        /// <summary>
+        /// the min amount of mana, when acommplished build a portal
+        /// </summary>
         protected int MinManaForPortal { get; private set; }
+        /// <summary>
+        /// the amount of the expect mana on turn 600, in relation to the currnet mana per turn
+        /// </summary>
         protected int MaxPotentialMana { get; private set; }
+        /// <summary>
+        /// how much health points we expect in panic mode, when is coming to panic point start big attack 
+        /// </summary>
         protected int PanicTrigger { get; private set; }
+        /// <summary>
+        /// any portal in the range considered as deffend portal 
+        /// need the change the name
+        /// </summary>
         protected int BadMarginOfError { get; private set; }
+        /// <summary>
+        /// minimum range from castle when enemy portal considered as threat
+        /// </summary>
         protected int EnemyAggressivePortalRangeFromCastle { get; private set; }
+        /// <summary>
+        /// minimum range from elf when enemy portal considered as threat
+        /// </summary>
         protected int EnemyAggressivePortalRangeFromElf { get; private set; }
+        /// <summary>
+        /// minimum range from portal when enemy portal considered as threat
+        /// </summary>
         protected int EnemyAggressivePortalRangeFromPortal { get; private set; }
         protected int EnemyVeryAggressivePortalRangeFromCastle { get; private set; }
         protected int EnemyVeryAggressivePortalRangeFromElf { get; private set; }

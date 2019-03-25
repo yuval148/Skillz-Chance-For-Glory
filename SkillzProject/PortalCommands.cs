@@ -6,7 +6,14 @@ namespace MyBot
 
     class PortalCommands : StrategicCalculations
     {
+        /// <summary>
+        /// Used to calculate average portal amount.
+        /// </summary>
         public int TotalPortals { get; set; } = 0;
+        /// <summary>
+        /// Number of turns without summoning ice trolls.
+        /// Used in calculating ice troll summon rate.
+        /// </summary>
         public int TurnsWithoutTrolls { get; set; } = 0;
         private bool MazganBot = false;
 
@@ -24,21 +31,23 @@ namespace MyBot
             {
                 //Specific bot strategies
                 SpecificBotStrategies(game, portals);
+                //End specific bot strategies
                 if (TurnsWithoutTrolls >= IceTrollSummonRate)
                 {
+                    //if already summond a troll
                     bool flag = false;
 
                     //Defend against enemy elves
                     enemyElves = game.GetAllEnemyElves();
                     DefendAgainst(enemyElves, EnemyAggressiveElfRangeFromPortal, CreatureType.IceTroll, portals, ref flag, game);
 
-                    //Defend against tornadoes
+                    //Defend against enemy tornadoes
                     DefendAgainst(game.GetEnemyTornadoes(), EnemyAggressiveTornadoRangeFromPortal, CreatureType.IceTroll, portals, ref flag, game);
 
-                    //Defend against portals
+                    //Defend against enemy portals
                     DefendAgainst(game.GetEnemyPortals(), EnemyAggressivePortalRangeFromPortal, CreatureType.Tornado, portals, ref flag, game);
 
-                    //Defend against lava giants
+                    //Defend against enemy lava giants
                     Creature[] enemyGiants = game.GetEnemyLavaGiants();
                     if (enemyGiants != null && !flag)
                     {

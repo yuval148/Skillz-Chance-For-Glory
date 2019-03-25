@@ -330,3 +330,5 @@ ASALocalRun/
 .mfractor/
 config.json
 Superior SkillZ Plugin.exe
+*.csproj
+SkillzProject/SkillzProject.csproj

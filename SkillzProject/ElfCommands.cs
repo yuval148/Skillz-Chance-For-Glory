@@ -10,6 +10,8 @@ namespace MyBot
         {
             Elf[] myElves = game.GetMyLivingElves();
             Portal[] portals = game.GetMyPortals();
+            Elf[] enemyElves = game.GetEnemyLivingElves();
+            game.Debug("DDBETV: " + game.GetVolcano().DamageByEnemy);
             //If we have no elves, do nothing
             if (myElves.Length < 1)
             {
@@ -18,6 +20,24 @@ namespace MyBot
             //Specific bot strategies
             SpecificBotStrategies(game, myElves);
             //End specific bot strategies
+            /*
+             * Life threatening danger:
+             * If we have less than half our life, PPANIC!!!!!!! (HGTTG)
+             */
+            if (game.GetMyCastle().CurrentHealth <= game.GetMyCastle().MaxHealth / 2)
+            {
+                DefendAgainst(game.GetEnemyPortals(), game, myElves, EnemyVeryAggressivePortalRangeFromCastle, EnemyVeryAggressivePortalRangeFromElf);
+            }
+            /*
+             * Kill straggelers:
+             * Kill low health elves.
+             */
+            Elf[] lowHealthElves = System.Array.FindAll(enemyElves, elf => { game.Debug("Elf has " + elf.CurrentHealth + " health, kill? " + (elf.CurrentHealth < elf.MaxHealth / 6)); return elf.CurrentHealth < elf.MaxHealth / 6; });
+            if (lowHealthElves.Length > 0)
+            {
+                DefendAgainst(lowHealthElves, game, myElves, 0, lowHealthElves[0].AttackRange * 2);
+                game.Debug("Attacked elf!");
+            }
             /*
              * Build fountains:
              * If we have less mana than the desired mana per turn, the offensive elf will build mana fountains
@@ -32,7 +52,22 @@ namespace MyBot
                 }
                 else
                 {
-                    BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game);
+                    BuildInRadius(MinFountainBuildRadius, myElves[myElves.Length - 1], game, 2);
+                }
+            }
+            /*
+             * Attack volcano:
+             * If we have a few portals, attack volcano.
+             */
+            if (game.GetVolcano().IsActive())
+            {
+                if (game.Turn < game.VolcanoInactiveTurns)
+                {
+                    DefendAgainst(new GameObject[] { game.GetVolcano() }, game, myElves, 9999, 0);
+                }
+                else
+                {
+                    DefendAgainst(new GameObject[] { game.GetVolcano() }, game, myElves, 0, game.GetMyPortals().Length * game.ElfAttackRange);
                 }
             }
             /*
@@ -40,7 +75,7 @@ namespace MyBot
              * Our first priorety is to reach the desired portal amount. Until we do, building portals is our highest
              * priority. Once we do, defending becomes our highest priority. If we have less manaPerTurn than our ideal
              * mana per turn, we build more mana fountains, and then more portals.
-             */ 
+             */
             {
                 if (portals.Length >= DesiredPortalAmount)
                 {
@@ -57,7 +92,7 @@ namespace MyBot
                         }
                         else
                         {
-                            game.Debug("0 Can't build. DI: " + myElves[0].Distance(game.GetMyCastle())  + " < " + MinPortalBuildRadius);
+                            game.Debug("0 Can't build. DI: " + myElves[0].Distance(game.GetMyCastle()) + " < " + MinPortalBuildRadius);
                             BuildInRadius(MinPortalBuildRadius, myElves[0], game);
                         }
                     }
@@ -108,7 +143,7 @@ namespace MyBot
             }
             /*
              * If we have enough mana, we hide our elves from enemies (close elves/ice trolls).
-             */ 
+             */
             if (game.GetMyMana() > 300) //Why 300?
             {
                 foreach (var elf in myElves)
@@ -122,7 +157,7 @@ namespace MyBot
              * Our next priority is to defend against everything: first close elves, then close portals, then far elves
              * , then far portals, then mana fountains and lastly lava giants (since trolls can pretty easily deal with
              * those).
-             */ 
+             */
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, 0, game.ElfAttackRange);
             DefendPortalsAndElves(game, myElves);
             DefendAgainst(game.GetEnemyManaFountains(), game, myElves, EnemyAggressivePortalRangeFromCastle, EnemyAggressivePortalRangeFromElf);
@@ -143,7 +178,7 @@ namespace MyBot
             /*
              * Look at enemies:
              * Our idle elves will look at enemies to be ready to intercept them once they get too close.
-             */ 
+             */
             if (game.GetEnemyLivingElves().Length > 0)
             {
                 for (int i = 1; i < myElves.Length; i++)
@@ -160,14 +195,14 @@ namespace MyBot
                             nearestElf = item;
                         }
                     }
-                 
+
                     myElves[i].MoveTo(Cis(DefendRadius, BaseDegree, game.GetMyCastle().Location));
                 }
             }
             /*
              * Pretend you're working:
              * In case all enemy elves are dead, we can "pass the time" by building more portals.
-             */ 
+             */
             foreach (var elf in myElves)
             {
                 if (elf.AlreadyActed)
@@ -423,7 +458,7 @@ namespace MyBot
         /// <param name="game"></param>
         /// <param name="degree"></param>
         /// <param name="degreeModifier"></param>
-        public void BuildInRadius(double radius, Elf builder, Game game, double degree = PI / 3, double degreeModifier = 2.0)
+        public void BuildInRadius(double radius, Elf builder, Game game, double degreeModifier = 2.0)
         {
             if (builder.AlreadyActed)
                 return;
@@ -488,6 +523,8 @@ namespace MyBot
             Hide(builder, game);
             game.Debug("Elf " + builder.Id + " failed? to hide. Elf " + builder.AlreadyActed + " acted.");
             if (builder.AlreadyActed)
+                return;
+            if (builder.Location == target)
                 return;
             builder.MoveTo(target);
             game.Debug("Elf " + builder.Id + " moved to build. Elf " + builder.AlreadyActed + " acted.");

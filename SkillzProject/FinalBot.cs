@@ -10,6 +10,7 @@ namespace MyBot
 
         public void DoTurn(Game game)
         {
+            game.Debug("ChanceForGlory\nBoros is dead; long live Orzhov!!\n\nBanana binana is a nice banana. Codey Codcodey is a secret society.");
             int startingMana = game.GetMyMana();
             Command(ElfCommands, game);
             Command(PortalCommands, game);

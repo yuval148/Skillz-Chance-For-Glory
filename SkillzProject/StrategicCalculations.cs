@@ -19,7 +19,7 @@ namespace MyBot
         /// <summary>
         /// the first defend circle, only when we don't have any target
         /// </summary>
-        protected int DefendRadius { get; private set; } 
+        protected int DefendRadius { get; private set; }
         /// <summary>
         /// how much portals do we want to have, when amount is acommplished priorty lower
         /// </summary>
@@ -51,7 +51,7 @@ namespace MyBot
         /// <summary>
         /// the max radius for build portals
         /// </summary>
-        protected int MaxBuildRadius { get; private set; } 
+        protected int MaxBuildRadius { get; private set; }
         /// <summary>
         /// the min amount of mana, when acommplished build a portal
         /// </summary>
@@ -81,12 +81,14 @@ namespace MyBot
         /// minimum range from portal when enemy portal considered as threat
         /// </summary>
         protected int EnemyAggressivePortalRangeFromPortal { get; private set; }
+        protected int EnemyVeryAggressivePortalRangeFromPortal { get; private set; }
         protected int EnemyVeryAggressivePortalRangeFromCastle { get; private set; }
         protected int EnemyVeryAggressivePortalRangeFromElf { get; private set; }
         protected int EnemyAggressiveElfRangeFromCastle { get; private set; }
         protected int EnemyAggressiveElfRangeFromElf { get; private set; }
         protected int EnemyAggressiveElfRangeFromPortal { get; private set; }
         protected int EnemyAggressiveTornadoRangeFromPortal { get; private set; }
+        protected int EnemyVeryAggressiveTornadoRangeFromPortal { get; private set; }
         protected int EnemyAggressiveLavaGiantRangeFromCastle { get; private set; }
         protected int EnemyAggressiveLavaGiantRangeFromElf { get; private set; }
 
@@ -119,10 +121,12 @@ namespace MyBot
             CalculateEnemyAggressivePortalRangeFromPortal(game);
             CalculateEnemyVeryAggressivePortalRangeFromCastle(game);
             CalculateEnemyVeryAggressivePortalRangeFromElf(game);
+            CalculateEnemyVeryAggressivePortalRangeFromPortal(game);
             CalculateEnemyAggressiveElfRangeFromCastle(game);
             CalculateEnemyAggressiveElfRangeFromElf(game);
             CalculateEnemyAggressiveElfRangeFromPortal(game);
             CalculateEnemyAggressiveTornadoRangeFromPortal(game);
+            CalculateEnemyVeryAggressiveTornadoRangeFromPortal(game);
             CalculateEnemyAggressiveLavaGiantRangeFromCastle(game);
             CalculateEnemyAggressiveLavaGiantRangeFromElf(game);
         }
@@ -197,6 +201,10 @@ namespace MyBot
             catch
             {
                 IceTrollSummonRate = 8;//(int)System.Math.Ceiling((decimal)((game.IceTrollCost / game.DefaultManaPerTurn) * 1.6));
+            }
+            if (game.GetMyCastle().CurrentHealth <= PanicTrigger)
+            {
+                IceTrollSummonRate /= 2;
             }
         }
         private void CalculateTheLongestDay(Game game)
@@ -281,7 +289,11 @@ namespace MyBot
         }
         private void CalculateEnemyAggressivePortalRangeFromPortal(Game game)
         {
-            EnemyAggressivePortalRangeFromPortal = 700;
+            EnemyAggressivePortalRangeFromPortal = game.PortalSize * 3 + 100;
+        }
+        private void CalculateEnemyVeryAggressivePortalRangeFromPortal(Game game)
+        {
+            EnemyVeryAggressivePortalRangeFromPortal = game.PortalSize * 2 + 100;
         }
         private void CalculateEnemyVeryAggressivePortalRangeFromCastle(Game game)
         {
@@ -289,7 +301,7 @@ namespace MyBot
         }
         private void CalculateEnemyVeryAggressivePortalRangeFromElf(Game game)
         {
-            EnemyVeryAggressivePortalRangeFromElf = (int)(EnemyAggressivePortalRangeFromElf / 1.5);
+            EnemyVeryAggressivePortalRangeFromElf = (int)(EnemyAggressivePortalRangeFromElf);
         }
         private void CalculateEnemyAggressiveElfRangeFromCastle(Game game)
         {
@@ -310,7 +322,13 @@ namespace MyBot
         private void CalculateEnemyAggressiveTornadoRangeFromPortal(Game game)
         {
             //750
-            EnemyAggressiveElfRangeFromPortal = game.PortalSize + game.ElfAttackRange + game.ElfMaxSpeed * IceTrollSummonRate;
+            EnemyAggressiveTornadoRangeFromPortal = game.PortalSize + game.ElfAttackRange + game.ElfMaxSpeed * IceTrollSummonRate;
+            //1400
+        }
+        private void CalculateEnemyVeryAggressiveTornadoRangeFromPortal(Game game)
+        {
+            //750
+            EnemyVeryAggressiveTornadoRangeFromPortal = game.PortalSize + game.ElfAttackRange + game.ElfMaxSpeed * IceTrollSummonRate;
             //1400
         }
         private void CalculateEnemyAggressiveLavaGiantRangeFromCastle(Game game)
